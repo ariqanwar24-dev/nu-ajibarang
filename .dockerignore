@@ -1,0 +1,31 @@
+.git
+.github
+.vscode
+.idea
+.claude
+**/node_modules
+**/*.md
+
+# stale copy of an older version of this app, not deployed
+nu-ajb
+
+# secrets never belong in an image
+**/.env
+**/.env.*
+
+# build outputs, rebuilt inside the image
+vendor
+public/build
+public/hot
+public/storage
+
+# runtime state, lives in the mounted volume
+storage/app/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+database/*.sqlite
+
+tests
+phpunit.xml
