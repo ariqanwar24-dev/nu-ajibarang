@@ -10,8 +10,9 @@ class HomeController extends Controller
     public function index()
     {
         $beritaTerbaru = Berita::query()
-            ->terbit()
-            ->latest()
+            ->published()
+            ->orderByDesc('published_at')
+            ->orderByDesc('created_at')
             ->take(3)
             ->get();
 

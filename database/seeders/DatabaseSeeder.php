@@ -13,12 +13,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Akun demo hanya dibuat jika belum ada.
-        if (!User::where('email', 'test@example.com')->exists()) {
+        if (! User::where('email', 'test@example.com')->exists()) {
             User::factory()->create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
         }
-        $this->call(DesaSeeder::class);
+        $this->call([
+            DesaSeeder::class,
+            PengurusSeeder::class,
+        ]);
     }
 }

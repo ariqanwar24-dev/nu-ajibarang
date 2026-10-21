@@ -60,14 +60,17 @@
                     <p class="mt-1 text-xs text-slate-500">Akses penuh ke seluruh fitur warga.</p>
                 </div>
 
-                <div class="dash-card rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80">
+                <a href="{{ route('tracking.index') }}" class="dash-card group rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80 transition hover:ring-emerald-300">
                     <div class="flex items-center justify-between">
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Pengajuan KTA</p>
-                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700 font-bold">🪪</span>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Berita &amp; Kegiatan</p>
+                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700 font-bold">📰</span>
                     </div>
-                    <p class="mt-4 text-xl font-black text-slate-900">Cek Status</p>
-                    <p class="mt-1 text-xs text-slate-500">Verifikasi kartu tanda anggota.</p>
-                </div>
+                    <p class="mt-4 flex items-center justify-between gap-3 text-xl font-black text-slate-900">
+                        Cari Berita
+                        <span class="text-sm text-emerald-700 transition group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+                    </p>
+                    <p class="mt-1 text-xs text-slate-500">Telusuri berita dan lokasi kegiatan.</p>
+                </a>
 
                 <div class="dash-card rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80">
                     <div class="flex items-center justify-between">

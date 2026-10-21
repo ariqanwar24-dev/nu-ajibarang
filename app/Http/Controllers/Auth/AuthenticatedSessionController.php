@@ -30,11 +30,15 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if ($user->is_admin) {
+        if (! $user->isActive()) {
+            return redirect()->route('account.status');
+        }
+
+        if ($user->isAdmin()) {
             return redirect()->route('admin.index');
         }
 
-        if (!$user->anggota) {
+        if (! $user->anggota) {
             return redirect()->route('anggota.create');
         }
 

@@ -9,6 +9,11 @@
             'active' => request()->routeIs('admin.index'),
         ],
         [
+            'label' => 'Kelola Pengguna',
+            'route' => 'admin.pengguna.index',
+            'active' => request()->routeIs('admin.pengguna.*'),
+        ],
+        [
             'label' => 'Kelola Berita',
             'route' => 'admin.berita.index',
             'active' => request()->routeIs('admin.berita.index') || request()->routeIs('admin.berita.edit'),
@@ -133,7 +138,7 @@
                             </span>
                             <span class="hidden xl:block leading-tight">
                                 <span class="block max-w-[140px] truncate text-xs font-bold text-slate-800">{{ $pengguna?->name ?? 'Administrator' }}</span>
-                                <span class="block max-w-[140px] truncate text-[10px] text-brand-muted">{{ $pengguna?->email }}</span>
+                                <span class="block max-w-[140px] truncate text-[10px] text-brand-muted">{{ $pengguna?->roleLabel() ?? 'Admin' }} · {{ $pengguna?->email }}</span>
                             </span>
                             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/>
@@ -145,6 +150,9 @@
                             <div class="border-b border-slate-100 px-3 py-2.5">
                                 <p class="truncate text-sm font-bold text-slate-800">{{ $pengguna?->name }}</p>
                                 <p class="truncate text-xs text-slate-500">{{ $pengguna?->email }}</p>
+                                <span class="mt-1.5 inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide text-amber-700">
+                                    {{ $pengguna?->roleLabel() ?? 'Admin' }}
+                                </span>
                             </div>
                             <a href="{{ route('profile.edit') }}"
                                class="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-brand">
@@ -207,7 +215,7 @@
                     </span>
                     <div class="min-w-0 flex-1">
                         <p class="truncate text-sm font-bold text-slate-800">{{ $pengguna?->name }}</p>
-                        <p class="truncate text-xs text-slate-500">{{ $pengguna?->email }}</p>
+                        <p class="truncate text-xs text-slate-500">{{ $pengguna?->roleLabel() ?? 'Admin' }} · {{ $pengguna?->email }}</p>
                     </div>
                 </div>
 

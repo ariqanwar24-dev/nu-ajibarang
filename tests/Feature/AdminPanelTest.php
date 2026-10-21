@@ -2,13 +2,14 @@
 
 use App\Models\Anggota;
 use App\Models\Berita;
+use App\Models\Desa;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 function adminUser(): User
 {
-    return User::factory()->create(['is_admin' => true]);
+    return User::factory()->admin()->create();
 }
 
 function dataBerita(array $override = []): array
@@ -20,7 +21,7 @@ function dataBerita(array $override = []): array
         'ringkasan' => 'Ringkasan pengajian rutin.',
         'isi' => "Paragraf pertama berita.\n\nParagraf kedua berita.",
         'penulis' => 'Admin MWC',
-        'status' => 'terbit',
+        'status' => 'pending',
     ], $override);
 }
 
@@ -29,7 +30,7 @@ test('tamu tidak dapat membuka panel admin', function () {
 });
 
 test('pengguna non-admin tidak dapat membuka panel admin', function () {
-    $user = User::factory()->create(['is_admin' => false]);
+    $user = User::factory()->create();
 
     $this->actingAs($user)->get(route('admin.index'))->assertForbidden();
 });
@@ -62,6 +63,7 @@ test('admin dapat membuka halaman edit berita dan halaman pengurus', function ()
     $admin = adminUser();
 
     $berita = Berita::create([
+        'user_id' => $admin->id,
         'judul' => 'Berita untuk Diedit',
         'slug' => 'berita-untuk-diedit',
         'isi' => 'Isi berita.',
@@ -85,6 +87,7 @@ test('admin dapat memperbarui berita', function () {
     $admin = adminUser();
 
     $berita = Berita::create([
+        'user_id' => $admin->id,
         'judul' => 'Judul Awal',
         'slug' => 'judul-awal',
         'isi' => 'Isi awal.',
@@ -122,7 +125,7 @@ test('admin dapat menyimpan berita beserta lokasi acara', function () {
     $this->assertDatabaseHas('beritas', [
         'judul' => 'Pengajian Rutin MWC NU Ajibarang',
         'slug' => 'pengajian-rutin-mwc-nu-ajibarang',
-        'status' => 'terbit',
+        'status' => 'pending',
         'user_id' => $admin->id,
         'lokasi_nama' => 'Masjid Baitul Muttaqin',
     ]);
@@ -135,7 +138,7 @@ test('slug otomatis tetap unik ketika judul sama', function () {
         'judul' => 'Pengajian Rutin MWC NU Ajibarang',
         'slug' => 'pengajian-rutin-mwc-nu-ajibarang',
         'isi' => 'Isi lama.',
-        'status' => 'terbit',
+        'status' => 'published',
     ]);
 
     $this->actingAs($admin)->post(route('admin.berita.store'), dataBerita())
@@ -153,7 +156,7 @@ test('slug manual yang duplikat ditolak dengan pesan validasi', function () {
         'judul' => 'Berita Lama',
         'slug' => 'slug-dipakai',
         'isi' => 'Isi lama.',
-        'status' => 'terbit',
+        'status' => 'published',
     ]);
 
     $this->actingAs($admin)->post(route('admin.berita.store'), dataBerita([
@@ -212,7 +215,7 @@ test('berita dapat diakses memakai slug dan tautan lama berbasis id', function (
         'judul' => 'Berita dengan Slug',
         'slug' => 'berita-dengan-slug',
         'isi' => 'Isi berita.',
-        'status' => 'terbit',
+        'status' => 'published',
     ]);
 
     expect(route('berita.show', $berita))->toEndWith('/berita/berita-dengan-slug');
@@ -231,7 +234,7 @@ test('berita terbit dengan lokasi menampilkan peta dan petunjuk arah', function 
         'judul' => 'Pengajian dengan Lokasi',
         'slug' => 'pengajian-dengan-lokasi',
         'isi' => 'Isi berita.',
-        'status' => 'terbit',
+        'status' => 'published',
         'lokasi_nama' => 'Masjid Agung',
         'lokasi_alamat' => 'Ajibarang',
         'latitude' => -7.4093,
@@ -252,7 +255,9 @@ test('admin dapat menambahkan anggota untuk akun yang belum terhubung', function
     $response = $this->actingAs($admin)->post(route('admin.anggota.store'), [
         'user_id' => $user->id,
         'nama_anggota' => 'Ahmad Fauzi',
-        'alamat' => 'Ajibarang Kulon',
+        'desa_id' => Desa::query()->where('nama', 'Ajibarang Kulon')->value('id'),
+        'rt' => '01',
+        'rw' => '02',
         'tanggal_lahir' => '1995-05-10',
         'jenis_kelamin' => 'L',
         'no_hp' => '081234567890',
@@ -283,7 +288,9 @@ test('akun yang sudah memiliki anggota tidak dapat dipakai dua kali', function (
     $this->actingAs($admin)->post(route('admin.anggota.store'), [
         'user_id' => $user->id,
         'nama_anggota' => 'Anggota Baru',
-        'alamat' => 'Ajibarang',
+        'desa_id' => Desa::query()->where('nama', 'Ajibarang Kulon')->value('id'),
+        'rt' => '01',
+        'rw' => '02',
         'jenis_kelamin' => 'P',
         'no_hp' => '081298765432',
     ])->assertSessionHasErrors('user_id');

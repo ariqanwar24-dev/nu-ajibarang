@@ -9,18 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::table('anggotas', function (Blueprint $table) {
-        $table->string('nomor_anggota')->nullable()->unique();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('anggotas', function (Blueprint $table) {
+            $table->string('nomor_anggota')->nullable()->unique();
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('anggotas', function (Blueprint $table) {
-        $table->dropUnique(['nomor_anggota']);
-        $table->dropColumn('nomor_anggota');
-    });
-}
+    public function down(): void
+    {
+        Schema::table('anggotas', function (Blueprint $table) {
+            $table->dropUnique(['nomor_anggota']);
+            $table->dropColumn('nomor_anggota');
+        });
+    }
 };

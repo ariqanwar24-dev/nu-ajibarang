@@ -52,52 +52,7 @@
 <body class="bg-[#FBFBF9] text-neutral-900 font-sans antialiased selection:bg-[#174A35] selection:text-white flex flex-col min-h-screen overflow-x-hidden">
 
     <!-- NAVBAR -->
-    <header class="sticky top-0 z-50 border-b border-brand-border bg-white/95 backdrop-blur-md">
-        <nav class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-3">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <img src="{{ asset('images/logo-nu.jpg') }}" alt="Logo NU"
-                     class="h-11 w-11 rounded-full border border-neutral-200 object-contain">
-                <div>
-                    <p class="text-sm font-bold text-[#174A35]">MWC NU Ajibarang</p>
-                    <p class="text-xs text-brand-muted">Banyumas, Jawa Tengah</p>
-                </div>
-            </a>
-
-            <button id="toggle-navbar" type="button" aria-label="Buka menu"
-                    aria-expanded="false"
-                    class="rounded-lg p-2 text-[#174A35] hover:bg-gray-100 md:hidden">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-
-            <div id="navbar-menu"
-                 class="hidden w-full flex-col gap-2 pb-2 text-sm font-medium md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:pb-0">
-                <a href="{{ route('home') }}"
-                   class="rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#174A35]">Beranda</a>
-                <a href="{{ route('berita.index') }}"
-                   class="rounded-lg bg-[#174A35] px-4 py-2 font-semibold text-white">Berita</a>
-                <a href="{{ route('pengurus.index') }}"
-                   class="rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#174A35]">Struktur Organisasi</a>
-                <a href="{{ route('kartu.index') }}"
-                   class="rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#174A35]">Kartu Anggota</a>
-                @auth
-                    @if (auth()->user()->is_admin)
-                        <a href="{{ route('admin.index') }}"
-                           class="rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">Panel Admin</a>
-                    @endif
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="w-full rounded-lg px-4 py-2 text-left text-red-600 hover:bg-red-50 md:w-auto">Keluar</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}"
-                       class="rounded-lg bg-[#174A35] px-5 py-2 text-center font-semibold text-white hover:bg-[#113928]">Login</a>
-                @endauth
-            </div>
-        </nav>
-    </header>
+    <x-public-navbar />
 
     <div class="flex min-h-screen flex-col">
 
@@ -278,21 +233,13 @@
 
     </div>
 
-    <!-- AOS & NAVBAR SCRIPT -->
+    <!-- AOS SCRIPT -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
             once: true,
             duration: 800,
             easing: 'ease-out-cubic'
-        });
-
-        const toggleNavbar = document.getElementById('toggle-navbar');
-        const navbarMenu = document.getElementById('navbar-menu');
-
-        toggleNavbar?.addEventListener('click', () => {
-            const isHidden = navbarMenu.classList.toggle('hidden');
-            toggleNavbar.setAttribute('aria-expanded', String(!isHidden));
         });
     </script>
 

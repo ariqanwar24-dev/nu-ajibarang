@@ -10,8 +10,10 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->is_admin) {
-            abort(403);
+        $user = $request->user();
+
+        if (! $user || ! $user->isActive() || ! $user->isAdmin()) {
+            abort(403, 'Anda tidak memiliki akses ke panel admin.');
         }
 
         return $next($request);

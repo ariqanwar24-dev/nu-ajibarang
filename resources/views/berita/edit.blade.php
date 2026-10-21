@@ -11,7 +11,7 @@
                 </nav>
                 <h1 class="mt-1.5 font-serif text-2xl font-semibold tracking-tight text-brand-deeper sm:text-3xl">Edit Berita</h1>
                 <p class="mt-1.5 max-w-2xl text-sm text-brand-muted">
-                    Perbarui konten dan status publikasi. Perubahan akan langsung tersimpan ke basis data.
+                    Perbarui konten lalu ajukan review. Perubahan pada berita terbit tidak langsung tampil sebelum disetujui super admin.
                 </p>
             </div>
 

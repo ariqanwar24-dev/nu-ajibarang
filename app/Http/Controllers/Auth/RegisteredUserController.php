@@ -36,16 +36,23 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
+        // Role dan status tidak pernah diambil dari input pengguna.
+        $user = new User([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $user->role = User::ROLE_USER;
+        $user->status = User::STATUS_PENDING;
+        $user->is_admin = false;
+        $user->save();
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect()->route('anggota.create');
+        return redirect()
+            ->route('account.status')
+            ->with('success', 'Pendaftaran berhasil. Akun Anda menunggu persetujuan admin.');
     }
 }

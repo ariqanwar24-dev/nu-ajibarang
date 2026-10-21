@@ -57,77 +57,7 @@
 <body class="bg-[#FBFBF9] text-neutral-900 font-sans antialiased selection:bg-[#174A35] selection:text-white overflow-x-hidden">
 
   <!-- NAVBAR -->
-  <header class="sticky top-0 z-50 border-b border-[#E5E0D5] bg-white/95 backdrop-blur-md">
-    <nav class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-3">
-
-      <a href="{{ route('home') }}" class="flex items-center gap-3">
-        <img src="{{ asset('images/logo-nu.jpg') }}" alt="Logo NU" class="h-11 w-11 rounded-full border border-neutral-200 object-contain">
-        <div>
-          <p class="text-sm font-bold text-[#174A35]">MWC NU Ajibarang</p>
-          <p class="text-xs text-gray-500">Banyumas, Jawa Tengah</p>
-        </div>
-      </a>
-
-      <button id="toggle-navbar" type="button" aria-label="Buka menu" aria-expanded="false" class="rounded-lg p-2 text-[#174A35] hover:bg-gray-100 md:hidden">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-
-      <div id="navbar-menu" class="hidden w-full flex-col gap-2 pb-2 text-sm font-medium md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:pb-0">
-
-        <a href="{{ route('home') }}" class="rounded-lg px-4 py-2 {{ request()->routeIs('home') ? 'bg-[#174A35] text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-[#174A35]' }}">
-          Beranda
-        </a>
-
-        <a href="{{ route('berita.index') }}" class="rounded-lg px-4 py-2 {{ request()->routeIs('berita.*') ? 'bg-[#174A35] text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-[#174A35]' }}">
-          Berita
-        </a>
-
-        <a href="{{ route('pengurus.index') }}" class="rounded-lg px-4 py-2 {{ request()->routeIs('pengurus.*') ? 'bg-[#174A35] text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-[#174A35]' }}">
-          Struktur Organisasi
-        </a>
-
-        <a href="{{ route('kartu.index') }}" class="rounded-lg px-4 py-2 {{ request()->routeIs('kartu.*') ? 'bg-[#174A35] text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-[#174A35]' }}">
-          Kartu Anggota
-        </a>
-
-        @auth
-          @if (auth()->user()->is_admin)
-            <a href="{{ route('admin.index') }}" class="rounded-lg px-4 py-2 text-[#174A35] hover:bg-gray-100">
-              Panel Admin
-            </a>
-          @endif
-
-          <div class="border-t border-gray-200 pt-2 md:border-0 md:pt-0">
-            <span class="block px-4 py-1 text-xs text-gray-500">
-              {{ auth()->user()->name }}
-            </span>
-
-            <form method="POST" action="{{ route('logout') }}">
-              @csrf
-              <button type="submit" class="w-full rounded-lg px-4 py-2 text-left text-red-600 hover:bg-red-50 md:w-auto">
-                Keluar
-              </button>
-            </form>
-          </div>
-        @else
-          <!-- REGISTER -->
-          <a href="{{ route('register') }}"
-             class="rounded-lg border border-[#174A35] px-5 py-2 text-center font-semibold text-[#174A35] transition hover:bg-green-50">
-            Register
-          </a>
-
-          <!-- LOGIN -->
-          <a href="{{ route('login') }}"
-             class="rounded-lg bg-[#174A35] px-5 py-2 text-center font-semibold text-white transition hover:bg-[#113928]">
-            Login
-          </a>
-        @endauth
-
-      </div>
-    </nav>
-  </header>
+  <x-public-navbar />
 
   <!-- KONTEN UTAMA -->
   <div class="flex min-h-screen flex-col">
@@ -342,6 +272,7 @@
               <li><a class="transition-colors hover:text-[#174A35]" href="{{ route('home') }}">Beranda</a></li>
               <li><a class="transition-colors hover:text-[#174A35]" href="{{ route('berita.index') }}">Berita</a></li>
               <li><a class="transition-colors hover:text-[#174A35]" href="{{ route('pengurus.index') }}">Struktur Organisasi</a></li>
+              <li><a class="transition-colors hover:text-[#174A35]" href="{{ route('tracking.index') }}">Lacak Berita &amp; Kegiatan</a></li>
             </ul>
           </div>
 
@@ -377,14 +308,6 @@
       duration: 800,
       offset: 80,
       easing: 'ease-out-cubic'
-    });
-
-    const toggleNavbar = document.getElementById('toggle-navbar');
-    const navbarMenu = document.getElementById('navbar-menu');
-
-    toggleNavbar?.addEventListener('click', () => {
-      const isHidden = navbarMenu.classList.toggle('hidden');
-      toggleNavbar.setAttribute('aria-expanded', String(!isHidden));
     });
   </script>
 

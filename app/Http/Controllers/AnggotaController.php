@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anggota;
+use App\Models\Desa;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +21,9 @@ class AnggotaController extends Controller
         $user = request()->user();
 
         $anggota = $user->anggota;
+        $desas = Desa::query()->orderBy('nama')->get(['id', 'nama']);
 
-        return view('anggota.create', compact('anggota'));
+        return view('anggota.create', compact('anggota', 'desas'));
     }
 
     /**
@@ -31,7 +33,9 @@ class AnggotaController extends Controller
     {
         $validated = $request->validate([
             'nama_anggota' => ['required', 'string', 'max:255'],
-            'alamat' => ['required', 'string', 'max:1000'],
+            'desa_id' => ['required', 'integer', Rule::exists('desas', 'id')],
+            'rt' => ['required', 'string', 'max:3', 'regex:/^[0-9]{1,3}$/'],
+            'rw' => ['required', 'string', 'max:3', 'regex:/^[0-9]{1,3}$/'],
             'tanggal_lahir' => ['nullable', 'date', 'before_or_equal:today'],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
             'no_hp' => ['required', 'string', 'max:20'],
@@ -82,7 +86,9 @@ class AnggotaController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'email']);
 
-        return view('admin.anggota.create', compact('users'));
+        $desas = Desa::query()->orderBy('nama')->get(['id', 'nama']);
+
+        return view('admin.anggota.create', compact('users', 'desas'));
     }
 
     public function adminStore(Request $request): RedirectResponse
@@ -95,7 +101,9 @@ class AnggotaController extends Controller
                 Rule::unique('anggotas', 'user_id'),
             ],
             'nama_anggota' => ['required', 'string', 'max:255'],
-            'alamat' => ['required', 'string', 'max:1000'],
+            'desa_id' => ['required', 'integer', Rule::exists('desas', 'id')],
+            'rt' => ['required', 'string', 'max:3', 'regex:/^[0-9]{1,3}$/'],
+            'rw' => ['required', 'string', 'max:3', 'regex:/^[0-9]{1,3}$/'],
             'tanggal_lahir' => ['nullable', 'date', 'before_or_equal:today'],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
             'no_hp' => ['required', 'string', 'max:20'],
@@ -130,8 +138,15 @@ class AnggotaController extends Controller
             'user_id.unique' => 'Akun tersebut sudah memiliki data anggota.',
             'nama_anggota.required' => 'Nama anggota wajib diisi.',
             'nama_anggota.max' => 'Nama anggota tidak boleh lebih dari 255 karakter.',
-            'alamat.required' => 'Alamat lengkap wajib diisi.',
-            'alamat.max' => 'Alamat maksimal 1000 karakter.',
+            'desa_id.required' => 'Desa wajib dipilih.',
+            'desa_id.integer' => 'Desa yang dipilih tidak valid.',
+            'desa_id.exists' => 'Desa yang dipilih tidak tersedia.',
+            'rt.required' => 'RT wajib diisi.',
+            'rt.max' => 'RT maksimal 3 digit.',
+            'rt.regex' => 'RT harus berupa angka 1 sampai 3 digit.',
+            'rw.required' => 'RW wajib diisi.',
+            'rw.max' => 'RW maksimal 3 digit.',
+            'rw.regex' => 'RW harus berupa angka 1 sampai 3 digit.',
             'tanggal_lahir.date' => 'Tanggal lahir tidak valid.',
             'tanggal_lahir.before_or_equal' => 'Tanggal lahir tidak boleh melewati hari ini.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
@@ -152,7 +167,9 @@ class AnggotaController extends Controller
         return [
             'user_id' => 'akun pengguna',
             'nama_anggota' => 'nama anggota',
-            'alamat' => 'alamat',
+            'desa_id' => 'desa',
+            'rt' => 'RT',
+            'rw' => 'RW',
             'tanggal_lahir' => 'tanggal lahir',
             'jenis_kelamin' => 'jenis kelamin',
             'no_hp' => 'nomor HP',

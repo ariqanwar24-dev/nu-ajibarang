@@ -66,6 +66,7 @@
                             'rejected' => ['label' => 'Ditolak', 'class' => 'bg-red-100 text-red-700', 'border' => 'border-red-200'],
                             default => ['label' => 'Menunggu', 'class' => 'bg-amber-100 text-amber-800', 'border' => 'border-amber-200'],
                         };
+                        $milikSendiri = (int) $anggota->user_id === (int) auth()->id();
                     @endphp
 
                     <article class="kartu-anggota overflow-hidden rounded-3xl border {{ $status['border'] }} bg-white shadow-sm"
@@ -119,10 +120,22 @@
                                 <p class="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400">Tanggal Pengajuan</p>
                                 <p class="mt-0.5 text-xs font-semibold text-slate-700">{{ $anggota->created_at?->format('d-m-Y H:i') ?? '—' }}</p>
                             </div>
-                            <div class="sm:col-span-2">
-                                <p class="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400">Alamat</p>
-                                <p class="mt-0.5 whitespace-pre-line text-xs leading-relaxed text-slate-700">{{ $anggota->alamat }}</p>
+                            <div>
+                                <p class="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400">Desa</p>
+                                <p class="mt-0.5 text-xs font-semibold text-slate-700">{{ $anggota->desa?->nama ?? 'Belum diisi' }}</p>
                             </div>
+                            <div>
+                                <p class="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400">RT / RW</p>
+                                <p class="mt-0.5 text-xs font-semibold text-slate-700">
+                                    {{ filled($anggota->rt) ? $anggota->rt : '—' }} / {{ filled($anggota->rw) ? $anggota->rw : '—' }}
+                                </p>
+                            </div>
+                            @if (! $anggota->desa_id && $anggota->alamat)
+                                <div class="sm:col-span-2">
+                                    <p class="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400">Alamat Lama</p>
+                                    <p class="mt-0.5 whitespace-pre-line text-xs leading-relaxed text-slate-700">{{ $anggota->alamat }}</p>
+                                </div>
+                            @endif
 
                             @if ($anggota->status_verifikasi === 'rejected' && $anggota->catatan_verifikasi)
                                 <div class="sm:col-span-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2">
@@ -133,20 +146,26 @@
                         </div>
 
                         <div class="flex flex-wrap gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-4">
-                            <form action="{{ route('admin.anggota.verifikasi', $anggota) }}" method="POST" class="inline-flex">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status_verifikasi" value="approved">
-                                <button type="submit"
-                                        class="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-800">
-                                    Setujui Anggota
-                                </button>
-                            </form>
+                            @if ($milikSendiri)
+                                <p class="w-full rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-[11px] font-semibold leading-5 text-amber-900">
+                                    Anda tidak dapat menyetujui atau menolak pendaftaran Anda sendiri. Minta admin lain meninjaunya.
+                                </p>
+                            @else
+                                <form action="{{ route('admin.anggota.verifikasi', $anggota) }}" method="POST" class="inline-flex">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status_verifikasi" value="approved">
+                                    <button type="submit"
+                                            class="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-800">
+                                        Setujui Anggota
+                                    </button>
+                                </form>
 
-                            <button type="button" data-toggle-tolak="tolak-{{ $anggota->id }}"
-                                    class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100">
-                                Tolak
-                            </button>
+                                <button type="button" data-toggle-tolak="tolak-{{ $anggota->id }}"
+                                        class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100">
+                                    Tolak
+                                </button>
+                            @endif
 
                             <form action="{{ route('admin.anggota.destroy', $anggota) }}" method="POST"
                                   onsubmit="return confirm('Hapus data anggota ini? Tindakan ini tidak dapat dibatalkan.')"
@@ -160,30 +179,32 @@
                             </form>
                         </div>
 
-                        <div id="tolak-{{ $anggota->id }}" class="hidden border-t border-red-100 bg-red-50/40 px-5 py-4">
-                            <form action="{{ route('admin.anggota.verifikasi', $anggota) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status_verifikasi" value="rejected">
+                        @unless ($milikSendiri)
+                            <div id="tolak-{{ $anggota->id }}" class="hidden border-t border-red-100 bg-red-50/40 px-5 py-4">
+                                <form action="{{ route('admin.anggota.verifikasi', $anggota) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status_verifikasi" value="rejected">
 
-                                <label for="catatan-{{ $anggota->id }}" class="mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-wider text-red-700">
-                                    Alasan Penolakan <span class="text-red-500">*</span>
-                                </label>
-                                <textarea id="catatan-{{ $anggota->id }}" name="catatan_verifikasi" rows="2" required maxlength="1000"
-                                          placeholder="Jelaskan data yang perlu diperbaiki..."
-                                          class="w-full rounded-xl border-red-200 text-xs leading-relaxed shadow-sm focus:border-red-500 focus:ring-red-500">{{ old('catatan_verifikasi') }}</textarea>
-                                <div class="mt-2 flex flex-wrap gap-2">
-                                    <button type="submit"
-                                            class="rounded-xl bg-red-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-800">
-                                        Kirim Penolakan
-                                    </button>
-                                    <button type="button" data-toggle-tolak="tolak-{{ $anggota->id }}"
-                                            class="rounded-xl border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-50">
-                                        Batal
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                                    <label for="catatan-{{ $anggota->id }}" class="mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-wider text-red-700">
+                                        Alasan Penolakan <span class="text-red-500">*</span>
+                                    </label>
+                                    <textarea id="catatan-{{ $anggota->id }}" name="catatan_verifikasi" rows="2" required maxlength="1000"
+                                              placeholder="Jelaskan data yang perlu diperbaiki..."
+                                              class="w-full rounded-xl border-red-200 text-xs leading-relaxed shadow-sm focus:border-red-500 focus:ring-red-500">{{ old('catatan_verifikasi') }}</textarea>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <button type="submit"
+                                                class="rounded-xl bg-red-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-800">
+                                            Kirim Penolakan
+                                        </button>
+                                        <button type="button" data-toggle-tolak="tolak-{{ $anggota->id }}"
+                                                class="rounded-xl border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-50">
+                                            Batal
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        @endunless
                     </article>
                 @endforeach
             </div>

@@ -1,7 +1,25 @@
 @php
     $isEdit = $berita !== null;
-    $statusTersimpan = old('status', $berita?->status ?? 'draft');
+    $statusForm = old('status', ($berita?->isPublished() || $berita?->isPending())
+        ? \App\Models\Berita::STATUS_PENDING
+        : \App\Models\Berita::STATUS_DRAFT);
+    $statusSaatIni = $berita?->status ?? \App\Models\Berita::STATUS_DRAFT;
+    $labelStatus = [
+        \App\Models\Berita::STATUS_DRAFT => 'Draft',
+        \App\Models\Berita::STATUS_PENDING => 'Menunggu Review',
+        \App\Models\Berita::STATUS_PUBLISHED => 'Terbit',
+        \App\Models\Berita::STATUS_REJECTED => 'Ditolak',
+    ];
+    $kelasStatus = [
+        \App\Models\Berita::STATUS_DRAFT => 'bg-slate-200 text-slate-700',
+        \App\Models\Berita::STATUS_PENDING => 'bg-amber-100 text-amber-800',
+        \App\Models\Berita::STATUS_PUBLISHED => 'bg-emerald-100 text-emerald-800',
+        \App\Models\Berita::STATUS_REJECTED => 'bg-red-100 text-red-700',
+    ];
     $gambarTersimpan = $berita?->gambar;
+    $galeriTersimpan = $berita?->galeri ?? collect();
+    $galeriPenuh = $galeriTersimpan->count() >= \App\Models\Berita::MAX_GALERI;
+    $galeriMelebihiBatas = $galeriTersimpan->count() > \App\Models\Berita::MAX_GALERI;
     $kategoriTersimpan = old('kategori', $berita?->kategori);
     $daftarKategori = ['Pengajian', 'Kegiatan Organisasi', 'Pendidikan', 'Sosial', 'Banom', 'Pengumuman', 'Prestasi'];
 @endphp
@@ -26,7 +44,7 @@
         @method('PUT')
     @endif
 
-    <input type="hidden" name="status" id="status-berita" value="{{ $statusTersimpan }}">
+    <input type="hidden" name="status" id="status-berita" value="{{ $statusForm }}">
 
     <div class="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
         <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_368px]">
@@ -254,30 +272,53 @@
                         <p class="mt-0.5 text-xs text-brand-muted">Tentukan status dan simpan berita.</p>
                     </div>
                     <div class="space-y-3 p-5">
+                        @if ($berita?->isPublished())
+                            <div class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] leading-relaxed text-amber-900">
+                                <strong>Berita sudah terbit.</strong> Menyimpan sebagai draft akan menariknya dari halaman publik.
+                                Jika diajukan review, revisi tidak tampil sampai disetujui super admin.
+                            </div>
+                        @elseif ($berita?->isPending())
+                            <div class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-[11px] leading-relaxed text-sky-900">
+                                <strong>Menunggu review.</strong> Berita ini belum tampil publik. Perubahan yang disimpan tetap menunggu persetujuan super admin.
+                            </div>
+                        @elseif ($berita?->isRejected() && $berita->review_note)
+                            <div class="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-[11px] leading-relaxed text-red-900">
+                                <strong>Ditolak:</strong> {{ $berita->review_note }}<br>
+                                <span class="text-red-700">Perbaiki berita lalu ajukan review kembali.</span>
+                            </div>
+                        @endif
+
                         <div class="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2.5">
                             <span class="text-xs font-semibold text-slate-500">Status saat ini</span>
                             <span id="status-preview"
-                                  class="rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide {{ $statusTersimpan === 'terbit' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' }}">
-                                {{ $statusTersimpan === 'terbit' ? 'Terbit' : 'Draft' }}
+                                  class="rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide {{ $kelasStatus[$statusSaatIni] ?? $kelasStatus[\App\Models\Berita::STATUS_DRAFT] }}">
+                                {{ $labelStatus[$statusSaatIni] ?? 'Draft' }}
                             </span>
                         </div>
 
                         @error('status')<p class="text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
+
+                        @unless (auth()->user()?->isSuperAdmin())
+                            <div class="rounded-xl border border-brand-border bg-brand-surface px-3 py-2.5 text-[11px] leading-relaxed text-brand-muted">
+                                <strong class="text-brand">Perlu persetujuan super admin.</strong>
+                                Admin biasa tidak dapat menerbitkan berita langsung. Ajukan review; berita baru tampil publik setelah disetujui super admin.
+                            </div>
+                        @endunless
 
                         <button type="submit" data-status="draft"
                                 class="submit-berita flex w-full items-center justify-center gap-2 rounded-xl border border-brand bg-white px-4 py-3 text-sm font-extrabold text-brand transition hover:bg-emerald-50 disabled:cursor-wait disabled:opacity-60">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5h11l3 3v11H5V5Zm3 0v5h7V5M8 14h8"/>
                             </svg>
-                            Simpan Draft
+                            Simpan sebagai Draft
                         </button>
 
-                        <button type="submit" data-status="terbit"
+                        <button type="submit" data-status="pending"
                                 class="submit-berita flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-dark disabled:cursor-wait disabled:opacity-60">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m5 12 4 4L19 6"/>
                             </svg>
-                            {{ $isEdit ? 'Simpan & Terbitkan' : 'Terbitkan' }}
+                            {{ $berita?->isPublished() ? 'Ajukan Revisi' : ($isEdit ? 'Simpan & Ajukan Review' : 'Ajukan Review') }}
                         </button>
 
                         <p id="indikator-simpan" class="hidden rounded-lg bg-sky-50 px-3 py-2 text-center text-[11px] font-semibold text-sky-800">
@@ -290,7 +331,8 @@
                         </a>
 
                         <p class="text-[10.5px] leading-relaxed text-slate-400">
-                            Draft tidak tampil di halaman publik. Berita berstatus terbit akan langsung muncul di daftar berita.
+                            Hanya berita berstatus <strong>Terbit</strong> yang tampil di halaman publik.
+                            Draft, menunggu review, dan ditolak tidak dapat diakses publik.
                         </p>
                     </div>
                 </section>
@@ -334,6 +376,109 @@
                     </div>
                 </section>
 
+                {{-- GALERI FOTO --}}
+                <section class="overflow-hidden rounded-3xl border border-brand-border bg-white shadow-sm">
+                    <div class="border-b border-slate-100 px-5 py-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <div>
+                                <h2 class="text-base font-black tracking-tight text-slate-900">Galeri Foto</h2>
+                                <p class="mt-0.5 text-xs text-brand-muted">JPG, PNG, atau WebP maksimal {{ \App\Models\Berita::MAX_GALERI_SIZE_MB }} MB per foto.</p>
+                            </div>
+                            <span @class([
+                                'rounded-full px-2.5 py-1 text-[10px] font-extrabold',
+                                'bg-amber-50 text-amber-800' => $galeriPenuh,
+                                'bg-emerald-50 text-emerald-800' => ! $galeriPenuh,
+                            ])>
+                                {{ $galeriTersimpan->count() }}/{{ \App\Models\Berita::MAX_GALERI }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 p-5">
+                        @if ($galeriMelebihiBatas)
+                            <div class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] leading-relaxed text-amber-900">
+                                <strong>Galeri ini memiliki {{ $galeriTersimpan->count() }} foto lama.</strong>
+                                Data melebihi batas baru {{ \App\Models\Berita::MAX_GALERI }} foto tetap disimpan.
+                                Halaman publik hanya menampilkan {{ \App\Models\Berita::MAX_GALERI }} foto pertama.
+                                Hapus atau ganti foto untuk menyesuaikan batas.
+                            </div>
+                        @endif
+
+                        @if ($isEdit && $galeriTersimpan->isNotEmpty())
+                            <div class="grid grid-cols-2 gap-3">
+                                @foreach ($galeriTersimpan as $foto)
+                                    <div class="group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                                        <a href="{{ route('berita.galeri.show', [$berita, $foto]) }}" target="_blank" rel="noopener"
+                                           class="block aspect-[4/3] overflow-hidden" title="Buka foto ukuran penuh">
+                                            <img src="{{ route('berita.galeri.show', [$berita, $foto]) }}"
+                                                 alt="Foto galeri {{ $loop->iteration }}"
+                                                 class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                                                 loading="lazy">
+                                        </a>
+                                        <button type="submit"
+                                                form="hapus-galeri-{{ $foto->id }}"
+                                                onclick="return confirm('Hapus foto galeri ini? Berita tidak akan terhapus.')"
+                                                class="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-red-600/95 text-sm font-black text-white shadow-md transition hover:bg-red-700"
+                                                title="Hapus foto galeri"
+                                                aria-label="Hapus foto galeri {{ $loop->iteration }}">
+                                            ×
+                                        </button>
+                                        <button type="button"
+                                                data-pilih-ganti="ganti-file-{{ $foto->id }}"
+                                                class="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-slate-900/70 px-2 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition hover:bg-slate-900/85"
+                                                title="Ganti foto galeri"
+                                                aria-label="Ganti foto galeri {{ $loop->iteration }}">
+                                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h3l2-2h6l2 2h3v12H4V7Zm8 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/>
+                                            </svg>
+                                            Ganti foto
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
+                                <p class="text-xs font-bold text-slate-600">Belum ada foto galeri</p>
+                                <p class="mt-1 text-[10.5px] text-slate-400">Tambahkan beberapa foto pendukung berita.</p>
+                            </div>
+                        @endif
+
+                        @if (! $galeriPenuh)
+                            <div>
+                                <label for="galeri" class="mb-1.5 block text-xs font-extrabold uppercase tracking-wider text-slate-600">
+                                    Pilih Foto Galeri Sekaligus
+                                </label>
+                                <input type="file" id="galeri" name="galeri[]" multiple
+                                       accept="image/jpeg,image/png,image/webp"
+                                       title="Pilih hingga {{ \App\Models\Berita::MAX_GALERI_PER_UPLOAD }} foto sekaligus (Ctrl/Cmd + klik)"
+                                       class="block w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-50 file:px-3 file:py-2 file:text-xs file:font-bold file:text-emerald-800">
+                                <p class="mt-1.5 text-[10.5px] leading-relaxed text-slate-400">
+                                    Pilih hingga {{ \App\Models\Berita::MAX_GALERI_PER_UPLOAD }} foto dalam satu kali pilih
+                                    (Ctrl/Cmd + klik), lalu simpan berita. Tidak perlu mengedit ulang untuk menambah foto.
+                                    Maksimal {{ \App\Models\Berita::MAX_GALERI_SIZE_MB }} MB per foto dan total
+                                    {{ \App\Models\Berita::MAX_GALERI }} foto per berita.
+                                    Sisa slot: {{ max(0, \App\Models\Berita::MAX_GALERI - $galeriTersimpan->count()) }} foto.
+                                </p>
+                                <p id="info-galeri" class="mt-1 text-[10.5px] font-semibold text-slate-500" role="status" aria-live="polite"></p>
+                            </div>
+
+                            <div id="preview-galeri" class="hidden grid grid-cols-3 gap-2"></div>
+                        @elseif (! $galeriMelebihiBatas)
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-[11px] leading-relaxed text-slate-600">
+                                <strong>Galeri sudah penuh.</strong> Hapus atau ganti salah satu foto untuk mengubah galeri.
+                            </div>
+                        @endif
+
+                        @foreach ($errors->getMessages() as $field => $messages)
+                            @if ($field === 'foto' || $field === 'galeri' || str_starts_with($field, 'galeri.'))
+                                @foreach ($messages as $message)
+                                    <p class="text-xs font-semibold text-red-600">{{ $message }}</p>
+                                @endforeach
+                            @endif
+                        @endforeach
+                    </div>
+                </section>
+
                 {{-- PENULIS & KATEGORI --}}
                 <section class="overflow-hidden rounded-3xl border border-brand-border bg-white shadow-sm">
                     <div class="border-b border-slate-100 px-5 py-4">
@@ -370,6 +515,33 @@
     </div>
 </form>
 
+@if ($isEdit && $galeriTersimpan->isNotEmpty())
+    {{-- Form terpisah agar penghapusan/penggantian satu foto tidak mengirim ulang form berita. --}}
+    @foreach ($galeriTersimpan as $foto)
+        <form id="hapus-galeri-{{ $foto->id }}"
+              action="{{ route('admin.berita.galeri.destroy', [$berita, $foto]) }}"
+              method="POST"
+              class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+
+        <form id="ganti-galeri-{{ $foto->id }}"
+              action="{{ route('admin.berita.galeri.replace', [$berita, $foto]) }}"
+              method="POST"
+              enctype="multipart/form-data"
+              class="hidden">
+            @csrf
+            @method('PATCH')
+            <input type="file"
+                   id="ganti-file-{{ $foto->id }}"
+                   name="foto"
+                   accept="image/jpeg,image/png,image/webp"
+                   data-ganti-galeri>
+        </form>
+    @endforeach
+@endif
+
 @push('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -382,7 +554,6 @@
             const ringkasan = document.getElementById('ringkasan');
             const hitungRingkasan = document.getElementById('hitung-ringkasan');
             const statusInput = document.getElementById('status-berita');
-            const statusPreview = document.getElementById('status-preview');
             const indikator = document.getElementById('indikator-simpan');
             const tombolSubmit = document.querySelectorAll('.submit-berita');
 
@@ -421,20 +592,11 @@
                 });
             }
 
-            document.querySelectorAll('[data-status]').forEach((tombol) => {
+            form?.querySelectorAll('[data-status]').forEach((tombol) => {
                 tombol.addEventListener('click', () => {
                     if (!statusInput) return;
 
                     statusInput.value = tombol.dataset.status;
-
-                    if (statusPreview) {
-                        const terbit = tombol.dataset.status === 'terbit';
-                        statusPreview.textContent = terbit ? 'Terbit' : 'Draft';
-                        statusPreview.classList.toggle('bg-emerald-100', terbit);
-                        statusPreview.classList.toggle('text-emerald-800', terbit);
-                        statusPreview.classList.toggle('bg-slate-200', !terbit);
-                        statusPreview.classList.toggle('text-slate-700', !terbit);
-                    }
                 });
             });
 
@@ -507,6 +669,109 @@
                     reader.readAsDataURL(file);
                 });
             }
+
+            // Pratinjau beberapa foto galeri sebelum diunggah.
+            const inputGaleri = document.getElementById('galeri');
+            const infoGaleri = document.getElementById('info-galeri');
+            const previewGaleri = document.getElementById('preview-galeri');
+            const galeriTersimpan = {{ $galeriTersimpan->count() }};
+            const maxGaleri = {{ \App\Models\Berita::MAX_GALERI }};
+            const maxUploadGaleri = {{ \App\Models\Berita::MAX_GALERI_PER_UPLOAD }};
+            const maxGaleriBytes = {{ \App\Models\Berita::MAX_GALERI_SIZE_MB }} * 1024 * 1024;
+            const tipeGaleriDiizinkan = ['image/jpeg', 'image/png', 'image/webp'];
+
+            if (inputGaleri) {
+                inputGaleri.addEventListener('change', () => {
+                    const files = Array.from(inputGaleri.files || []);
+                    const pesan = [];
+                    const sisaSlot = Math.max(0, maxGaleri - galeriTersimpan);
+
+                    if (files.length > maxUploadGaleri) {
+                        pesan.push('Maksimal ' + maxUploadGaleri + ' foto per unggahan.');
+                    }
+
+                    if (files.length > sisaSlot) {
+                        pesan.push('Sisa kuota galeri hanya ' + sisaSlot + ' foto.');
+                    }
+
+                    files.forEach((file) => {
+                        if (!tipeGaleriDiizinkan.includes(file.type)) {
+                            pesan.push(file.name + ': tipe berkas tidak didukung.');
+                        }
+
+                        if (file.size > maxGaleriBytes) {
+                            pesan.push(file.name + ': ukuran melebihi {{ \App\Models\Berita::MAX_GALERI_SIZE_MB }} MB.');
+                        }
+                    });
+
+                    if (previewGaleri) {
+                        previewGaleri.innerHTML = '';
+                        previewGaleri.classList.toggle('hidden', files.length === 0);
+
+                        files.forEach((file) => {
+                            if (!tipeGaleriDiizinkan.includes(file.type)) {
+                                return;
+                            }
+
+                            const gambar = document.createElement('img');
+                            gambar.src = URL.createObjectURL(file);
+                            gambar.alt = 'Pratinjau ' + file.name;
+                            gambar.className = 'aspect-[4/3] w-full rounded-lg border border-slate-200 object-cover';
+                            previewGaleri.appendChild(gambar);
+                        });
+                    }
+
+                    if (infoGaleri) {
+                        if (pesan.length > 0) {
+                            infoGaleri.textContent = pesan.join(' ');
+                            infoGaleri.className = 'mt-1 text-[10.5px] font-semibold leading-relaxed text-red-600';
+                        } else if (files.length > 0) {
+                            infoGaleri.textContent = files.length + ' foto dipilih. Total setelah disimpan: '
+                                + (galeriTersimpan + files.length) + ' dari ' + maxGaleri + ' foto.';
+                            infoGaleri.className = 'mt-1 text-[10.5px] font-semibold leading-relaxed text-emerald-700';
+                        } else {
+                            infoGaleri.textContent = '';
+                            infoGaleri.className = 'mt-1 text-[10.5px] font-semibold text-slate-500';
+                        }
+                    }
+                });
+            }
+
+            // Ganti satu foto galeri tanpa menambah jumlah foto.
+            document.querySelectorAll('[data-pilih-ganti]').forEach((tombol) => {
+                tombol.addEventListener('click', () => {
+                    document.getElementById(tombol.dataset.pilihGanti)?.click();
+                });
+            });
+
+            document.querySelectorAll('[data-ganti-galeri]').forEach((input) => {
+                input.addEventListener('change', () => {
+                    const file = input.files?.[0];
+
+                    if (!file) {
+                        return;
+                    }
+
+                    if (!tipeGaleriDiizinkan.includes(file.type)) {
+                        window.alert('Format foto pengganti harus JPG, JPEG, PNG, atau WebP.');
+                        input.value = '';
+                        return;
+                    }
+
+                    if (file.size > maxGaleriBytes) {
+                        window.alert('Ukuran foto pengganti maksimal {{ \App\Models\Berita::MAX_GALERI_SIZE_MB }} MB.');
+                        input.value = '';
+                        return;
+                    }
+
+                    if (!window.confirm('Ganti foto galeri ini? Foto lama akan dihapus.')) {
+                        input.value = '';
+                        return;
+                    }
+
+                    input.closest('form')?.submit();
+                });
+            });
 
             // Peta lokasi acara.
             const petaEl = document.getElementById('peta-lokasi');

@@ -27,6 +27,13 @@
                         <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold text-amber-800">{{ $anggotaMenunggu }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.pengguna.index') }}"
+                   class="inline-flex items-center gap-2 rounded-xl border border-brand-border bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-brand/40 hover:text-brand">
+                    Persetujuan Akun
+                    @if ($penggunaMenunggu > 0)
+                        <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold text-rose-800">{{ $penggunaMenunggu }}</span>
+                    @endif
+                </a>
             </div>
         </div>
     </x-slot>
@@ -50,46 +57,46 @@
         @php
             $statistik = [
                 [
-                    'label' => 'Total Berita',
-                    'nilai' => $jumlahBerita,
-                    'catatan' => $jumlahBeritaTerbit.' terbit · '.$jumlahBeritaDraft.' draft',
-                    'route' => route('admin.berita.index'),
+                    'label' => 'Anggota Disetujui',
+                    'nilai' => $anggotaDisetujui,
+                    'catatan' => 'Anggota resmi terverifikasi',
+                    'route' => route('admin.anggota.index'),
                     'warna' => 'emerald',
                 ],
                 [
-                    'label' => 'Total Pengurus',
-                    'nilai' => $jumlahPengurus,
-                    'catatan' => 'Data pada struktur organisasi',
-                    'route' => route('pengurus.index'),
-                    'warna' => 'teal',
-                ],
-                [
-                    'label' => 'Total Anggota',
-                    'nilai' => $jumlahAnggota,
-                    'catatan' => $anggotaDisetujui.' sudah disetujui',
-                    'route' => route('admin.anggota.index'),
-                    'warna' => 'sky',
-                ],
-                [
-                    'label' => 'Menunggu Verifikasi',
+                    'label' => 'Pendaftaran Pending',
                     'nilai' => $anggotaMenunggu,
                     'catatan' => 'Perlu ditinjau admin',
                     'route' => route('admin.anggota.index'),
                     'warna' => 'amber',
                 ],
                 [
-                    'label' => 'Total Desa',
-                    'nilai' => $desas->count(),
-                    'catatan' => 'Wilayah Kecamatan Ajibarang',
-                    'route' => null,
-                    'warna' => 'indigo',
+                    'label' => 'Desa Sudah Ada Anggota',
+                    'nilai' => $desaDenganAnggota,
+                    'catatan' => 'Dari '.$desas->count().' desa',
+                    'route' => '#statistik-desa',
+                    'warna' => 'sky',
                 ],
                 [
-                    'label' => 'Kegiatan Desa',
-                    'nilai' => $totalKegiatanDesa,
-                    'catatan' => 'Agregat data desa (demo)',
-                    'route' => null,
+                    'label' => 'Desa Belum Ada Anggota',
+                    'nilai' => $desaTanpaAnggota,
+                    'catatan' => 'Belum memiliki anggota resmi',
+                    'route' => '#statistik-desa',
                     'warna' => 'rose',
+                ],
+                [
+                    'label' => 'Total Berita',
+                    'nilai' => $ringkasanBerita['total'],
+                    'catatan' => $ringkasanBerita['published'].' terbit · '.$ringkasanBerita['pending'].' menunggu review',
+                    'route' => route('admin.berita.index'),
+                    'warna' => 'teal',
+                ],
+                [
+                    'label' => 'Total Pengurus',
+                    'nilai' => $jumlahPengurus,
+                    'catatan' => 'Data pada struktur organisasi',
+                    'route' => route('pengurus.index'),
+                    'warna' => 'indigo',
                 ],
             ];
 
@@ -106,6 +113,19 @@
                 'pending' => ['label' => 'Menunggu', 'class' => 'bg-amber-100 text-amber-800'],
                 'approved' => ['label' => 'Disetujui', 'class' => 'bg-emerald-100 text-emerald-800'],
                 'rejected' => ['label' => 'Ditolak', 'class' => 'bg-red-100 text-red-700'],
+            ];
+
+            $labelStatusBerita = [
+                \App\Models\Berita::STATUS_DRAFT => 'Draft',
+                \App\Models\Berita::STATUS_PENDING => 'Menunggu Review',
+                \App\Models\Berita::STATUS_PUBLISHED => 'Terbit',
+                \App\Models\Berita::STATUS_REJECTED => 'Ditolak',
+            ];
+            $kelasStatusBerita = [
+                \App\Models\Berita::STATUS_DRAFT => 'bg-slate-200 text-slate-700',
+                \App\Models\Berita::STATUS_PENDING => 'bg-amber-100 text-amber-800',
+                \App\Models\Berita::STATUS_PUBLISHED => 'bg-emerald-100 text-emerald-800',
+                \App\Models\Berita::STATUS_REJECTED => 'bg-red-100 text-red-700',
             ];
         @endphp
 
@@ -136,6 +156,61 @@
             @endforeach
         </section>
 
+        {{-- STATUS PUBLIKASI BERITA --}}
+        <section class="dash-rise dash-delay-1 overflow-hidden rounded-3xl border border-brand-border bg-white shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-6">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-slate-900">Status Publikasi Berita</h2>
+                    <p class="mt-0.5 text-xs text-brand-muted">
+                        @if (auth()->user()->isSuperAdmin())
+                            Ringkasan seluruh berita pada sistem.
+                        @else
+                            Ringkasan berita yang Anda kelola.
+                        @endif
+                    </p>
+                </div>
+                <a href="{{ route('admin.berita.index') }}"
+                   class="rounded-lg border border-brand-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:border-brand hover:text-brand">
+                    Buka Kelola Berita →
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 p-4 sm:p-5 lg:grid-cols-4">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500">Draft</p>
+                        <span class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+                    </div>
+                    <p class="mt-2 text-3xl font-black text-slate-800">{{ $ringkasanBerita['draft'] }}</p>
+                    <p class="mt-1 text-[11px] text-slate-500">Belum diajukan</p>
+                </div>
+                <div class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-amber-700">Menunggu Review</p>
+                        <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+                    </div>
+                    <p class="mt-2 text-3xl font-black text-amber-800">{{ $ringkasanBerita['pending'] }}</p>
+                    <p class="mt-1 text-[11px] text-amber-700/80">Belum tampil publik</p>
+                </div>
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-emerald-700">Terbit</p>
+                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                    </div>
+                    <p class="mt-2 text-3xl font-black text-emerald-800">{{ $ringkasanBerita['published'] }}</p>
+                    <p class="mt-1 text-[11px] text-emerald-700/80">Tampil di halaman publik</p>
+                </div>
+                <div class="rounded-2xl border border-red-200 bg-red-50/70 p-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-red-700">Ditolak</p>
+                        <span class="h-2.5 w-2.5 rounded-full bg-red-500"></span>
+                    </div>
+                    <p class="mt-2 text-3xl font-black text-red-800">{{ $ringkasanBerita['rejected'] }}</p>
+                    <p class="mt-1 text-[11px] text-red-700/80">Perlu diperbaiki</p>
+                </div>
+            </div>
+        </section>
+
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.85fr)]">
             <div class="space-y-6">
                 {{-- BERITA TERBARU --}}
@@ -143,7 +218,13 @@
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-6">
                         <div>
                             <h2 class="text-lg font-black tracking-tight text-slate-900">Berita Terbaru</h2>
-                            <p class="mt-0.5 text-xs text-brand-muted">Lima publikasi terakhir dari basis data.</p>
+                            <p class="mt-0.5 text-xs text-brand-muted">
+                                @if (auth()->user()->isSuperAdmin())
+                                    Lima berita terbaru dari seluruh admin.
+                                @else
+                                    Lima berita terbaru yang Anda kelola.
+                                @endif
+                            </p>
                         </div>
                         <a href="{{ route('admin.berita.index') }}"
                            class="rounded-lg border border-brand-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:border-brand hover:text-brand">
@@ -169,10 +250,9 @@
                                     <div class="flex flex-wrap items-center gap-1.5">
                                         <span @class([
                                             'rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide',
-                                            'bg-emerald-100 text-emerald-800' => $item->sudahTerbit(),
-                                            'bg-slate-200 text-slate-700' => ! $item->sudahTerbit(),
+                                            $kelasStatusBerita[$item->status] ?? $kelasStatusBerita[\App\Models\Berita::STATUS_DRAFT],
                                         ])>
-                                            {{ $item->sudahTerbit() ? 'Terbit' : 'Draft' }}
+                                            {{ $labelStatusBerita[$item->status] ?? 'Draft' }}
                                         </span>
                                         @if ($item->kategori)
                                             <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[9.5px] font-bold text-amber-800">{{ $item->kategori }}</span>
@@ -218,33 +298,33 @@
                 <section class="dash-rise dash-delay-2 rounded-3xl border border-brand-border bg-white p-5 shadow-sm sm:p-6">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                            <h2 class="text-lg font-black tracking-tight text-slate-900">Sebaran Anggota per Desa</h2>
-                            <p class="mt-0.5 text-xs text-brand-muted">Visualisasi data desa yang tersimpan pada tabel <span class="font-mono text-[10px]">desas</span>.</p>
+                            <h2 class="text-lg font-black tracking-tight text-slate-900">Sebaran Anggota Resmi per Desa</h2>
+                            <p class="mt-0.5 text-xs text-brand-muted">Jumlah anggota berstatus disetujui pada setiap desa, dihitung langsung dari basis data.</p>
                         </div>
-                        <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[9.5px] font-extrabold uppercase tracking-wider text-amber-800">
-                            Data demo
+                        <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[9.5px] font-extrabold uppercase tracking-wider text-emerald-800">
+                            Data resmi
                         </span>
                     </div>
 
                     @if ($desas->isNotEmpty())
-                        @php $maxAnggota = max(1, (int) $desas->max('jumlah_anggota')); @endphp
+                        @php $maxAnggota = max(1, (int) $desas->max('approved_count')); @endphp
                         <div class="mt-5 grid gap-x-8 gap-y-3.5 sm:grid-cols-2">
                             @foreach ($desas as $desa)
                                 <div>
                                     <div class="mb-1 flex items-center justify-between gap-2">
                                         <span class="truncate text-xs font-semibold text-slate-600">{{ $desa->nama }}</span>
-                                        <span class="shrink-0 text-[11px] font-extrabold tabular-nums text-brand">{{ number_format($desa->jumlah_anggota) }}</span>
+                                        <span class="shrink-0 text-[11px] font-extrabold tabular-nums text-brand">{{ number_format($desa->approved_count) }}</span>
                                     </div>
                                     <div class="h-2 overflow-hidden rounded-full bg-slate-100">
                                         <div class="bar-fill h-full rounded-full bg-gradient-to-r from-brand to-teal-500"
-                                             data-width="{{ round(($desa->jumlah_anggota / $maxAnggota) * 100, 2) }}%"></div>
+                                             data-width="{{ round(($desa->approved_count / $maxAnggota) * 100, 2) }}%"></div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                         <p class="mt-4 text-[10.5px] leading-relaxed text-slate-400">
-                            Angka pada grafik berasal dari kolom <span class="font-mono">jumlah_anggota</span> pada data desa demo,
-                            bukan jumlah akun anggota terverifikasi.
+                            Grafik menampilkan seluruh desa, termasuk desa dengan jumlah anggota nol. Anggota lama yang belum memiliki data desa
+                            tidak dihitung per desa sampai datanya dilengkapi.
                         </p>
                     @else
                         <p class="mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
@@ -264,7 +344,7 @@
                             <p class="mt-0.5 text-[11px] text-brand-muted">Pengajuan anggota terakhir.</p>
                         </div>
                         <span class="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700">
-                            {{ $jumlahAnggota }} total
+                            {{ $anggotaDisetujui }} resmi
                         </span>
                     </div>
 
@@ -286,7 +366,7 @@
                                     <p class="truncate text-xs font-bold text-slate-800">{{ $anggota->nama_anggota }}</p>
                                     <p class="truncate text-[10.5px] text-slate-500">
                                         {{ $anggota->created_at?->diffForHumans() ?? '—' }}
-                                        · {{ $anggota->user?->email ?? 'tanpa akun' }}
+                                        · {{ $anggota->desa?->nama ?? 'Desa belum diisi' }}
                                     </p>
                                 </div>
                                 <span class="shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-extrabold {{ $status['class'] }}">
@@ -311,19 +391,27 @@
                     <p class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-brand-accent">Ringkasan Organisasi</p>
                     <div class="mt-4 space-y-3">
                         <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-                            <span class="text-xs text-emerald-50/80">Desa terdata</span>
-                            <strong class="text-lg">{{ $desas->count() }}</strong>
+                            <span class="text-xs text-emerald-50/80">Anggota resmi</span>
+                            <strong class="text-lg">{{ $anggotaDisetujui }}</strong>
                         </div>
                         <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-                            <span class="text-xs text-emerald-50/80">Ranting (data desa)</span>
-                            <strong class="text-lg">{{ number_format($totalRantingDesa) }}</strong>
+                            <span class="text-xs text-emerald-50/80">Desa dengan anggota</span>
+                            <strong class="text-lg">{{ $desaDenganAnggota }}</strong>
+                        </div>
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                            <span class="text-xs text-emerald-50/80">Desa belum ada anggota</span>
+                            <strong class="text-lg">{{ $desaTanpaAnggota }}</strong>
                         </div>
                         <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
                             <span class="text-xs text-emerald-50/80">Berita terbit</span>
-                            <strong class="text-lg">{{ $jumlahBeritaTerbit }}</strong>
+                            <strong class="text-lg">{{ $ringkasanBerita['published'] }}</strong>
+                        </div>
+                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                            <span class="text-xs text-emerald-50/80">Berita menunggu review</span>
+                            <strong class="text-lg text-amber-300">{{ $ringkasanBerita['pending'] }}</strong>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-emerald-50/80">Menunggu verifikasi</span>
+                            <span class="text-xs text-emerald-50/80">Pendaftaran pending</span>
                             <strong class="text-lg text-amber-300">{{ $anggotaMenunggu }}</strong>
                         </div>
                     </div>
@@ -357,35 +445,138 @@
             </div>
         </div>
 
-        {{-- DAFTAR DESA --}}
-        <section class="dash-rise dash-delay-3 rounded-3xl border border-brand-border bg-white p-5 shadow-sm sm:p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
+        {{-- TABEL STATISTIK DESA --}}
+        <section id="statistik-desa" class="dash-rise dash-delay-3 rounded-3xl border border-brand-border bg-white p-5 shadow-sm sm:p-6">
+            @php
+                $desaMenunggu = $desas
+                    ->filter(fn ($desa) => $desa->approved_count === 0 && $desa->pending_count > 0)
+                    ->count();
+            @endphp
+
+            <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <h2 class="text-lg font-black tracking-tight text-slate-900">Desa Kecamatan Ajibarang</h2>
-                    <p class="mt-0.5 text-xs text-brand-muted">Daftar desa dari tabel <span class="font-mono text-[10px]">desas</span>; metrik kegiatan dan ranting masih berupa data demo.</p>
+                    <h2 class="text-lg font-black tracking-tight text-slate-900">Statistik Anggota per Desa</h2>
+                    <p class="mt-0.5 max-w-2xl text-xs leading-5 text-brand-muted">
+                        Seluruh 15 desa Kecamatan Ajibarang. Angka anggota resmi hanya menghitung pendaftaran yang sudah disetujui;
+                        pendaftaran pending ditampilkan terpisah.
+                    </p>
                 </div>
-                <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">{{ $desas->count() }} desa</span>
+                <div class="flex flex-wrap gap-2">
+                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-extrabold text-emerald-800">{{ $desaDenganAnggota }} sudah ada anggota</span>
+                    <span class="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-extrabold text-amber-800">{{ $desaMenunggu }} menunggu verifikasi</span>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-extrabold text-slate-600">{{ $desaTanpaAnggota }} belum ada anggota</span>
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <label for="cari-desa" class="relative block w-full lg:max-w-xs">
+                    <span class="sr-only">Cari desa</span>
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"/>
+                    </svg>
+                    <input id="cari-desa" type="search" placeholder="Cari nama desa..."
+                           class="w-full rounded-xl border border-brand-border bg-white py-2.5 pl-9 pr-3 text-xs font-semibold text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-brand focus:ring-brand">
+                </label>
+
+                <div class="flex flex-wrap gap-2" role="group" aria-label="Filter status desa">
+                    <button type="button" data-filter-desa="semua"
+                            class="filter-desa rounded-full bg-brand px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition">
+                        Semua
+                    </button>
+                    <button type="button" data-filter-desa="ada"
+                            class="filter-desa rounded-full border border-brand-border bg-white px-3.5 py-1.5 text-[11px] font-bold text-slate-600 transition hover:border-brand hover:text-brand">
+                        Sudah ada anggota
+                    </button>
+                    <button type="button" data-filter-desa="pending"
+                            class="filter-desa rounded-full border border-brand-border bg-white px-3.5 py-1.5 text-[11px] font-bold text-slate-600 transition hover:border-brand hover:text-brand">
+                        Menunggu verifikasi
+                    </button>
+                    <button type="button" data-filter-desa="kosong"
+                            class="filter-desa rounded-full border border-brand-border bg-white px-3.5 py-1.5 text-[11px] font-bold text-slate-600 transition hover:border-brand hover:text-brand">
+                        Belum ada anggota
+                    </button>
+                </div>
             </div>
 
             @if ($desas->isNotEmpty())
-                <div class="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                    @foreach ($desas as $index => $desa)
-                        <div class="stat-tile flex items-start gap-2.5 rounded-2xl border border-slate-100 bg-slate-50/70 p-3">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-[10px] font-black text-white">
-                                {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                            </span>
-                            <div class="min-w-0">
-                                <p class="truncate text-xs font-extrabold text-slate-800">{{ $desa->nama }}</p>
-                                <p class="mt-0.5 text-[10px] leading-relaxed text-slate-500">
-                                    {{ number_format($desa->jumlah_anggota) }} anggota ·
-                                    {{ number_format($desa->jumlah_kegiatan) }} kegiatan ·
-                                    {{ number_format($desa->jumlah_ranting) }} ranting
-                                    <span class="text-amber-700">(demo)</span>
-                                </p>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+                    <table class="min-w-full divide-y divide-slate-100 text-left">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Desa</th>
+                                <th scope="col" class="px-4 py-3 text-right text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Anggota resmi</th>
+                                <th scope="col" class="px-4 py-3 text-right text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Pending</th>
+                                <th scope="col" class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Status desa</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            @foreach ($desas as $desa)
+                                @php
+                                    $statusDesa = $desa->approved_count > 0
+                                        ? ['key' => 'ada', 'label' => 'Sudah ada anggota', 'class' => 'bg-emerald-100 text-emerald-800', 'dot' => 'bg-emerald-500', 'border' => 'border-emerald-200']
+                                        : ($desa->pending_count > 0
+                                            ? ['key' => 'pending', 'label' => 'Menunggu verifikasi', 'class' => 'bg-amber-100 text-amber-800', 'dot' => 'bg-amber-500', 'border' => 'border-amber-200']
+                                            : ['key' => 'kosong', 'label' => 'Belum ada anggota', 'class' => 'bg-slate-100 text-slate-600', 'dot' => 'bg-slate-400', 'border' => 'border-slate-200']);
+                                @endphp
+                                <tr class="desa-row transition hover:bg-emerald-50/40"
+                                    data-nama="{{ mb_strtolower($desa->nama) }}"
+                                    data-status="{{ $statusDesa['key'] }}">
+                                    <td class="whitespace-nowrap px-4 py-3">
+                                        <div class="flex items-center gap-3">
+                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ $statusDesa['class'] }} ring-1 {{ $statusDesa['border'] }}">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 10.5h.01"/>
+                                                </svg>
+                                            </span>
+                                            <div>
+                                                <p class="text-xs font-extrabold text-slate-800">{{ $desa->nama }}</p>
+                                                <p class="text-[10px] text-slate-400">Kecamatan Ajibarang</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-right">
+                                        <span class="text-sm font-black tabular-nums {{ $desa->approved_count > 0 ? 'text-brand' : 'text-slate-400' }}">
+                                            {{ number_format($desa->approved_count) }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-right">
+                                        @if ($desa->pending_count > 0)
+                                            <span class="inline-flex min-w-[2rem] justify-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold text-amber-800">
+                                                {{ number_format($desa->pending_count) }}
+                                            </span>
+                                        @else
+                                            <span class="text-xs font-semibold text-slate-300">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-4 py-3">
+                                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-extrabold {{ $statusDesa['class'] }}">
+                                            <span class="h-1.5 w-1.5 rounded-full {{ $statusDesa['dot'] }}" aria-hidden="true"></span>
+                                            {{ $statusDesa['label'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+
+                <div id="desa-kosong-filter" class="mt-3 hidden rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+                    <p class="text-sm font-bold text-slate-700">Tidak ada desa yang sesuai.</p>
+                    <p class="mt-1 text-xs text-slate-500">Ubah kata pencarian atau pilih filter “Semua”.</p>
+                </div>
+
+                <p class="mt-3 text-[10.5px] leading-5 text-slate-400">
+                    Menampilkan <span id="jumlah-desa-tampil" class="font-bold text-slate-600">{{ $desas->count() }}</span> dari {{ $desas->count() }} desa.
+                    @if ($anggotaTanpaDesa > 0)
+                        <span class="mt-1 block font-semibold text-amber-700">
+                            Catatan: {{ $anggotaTanpaDesa }} anggota resmi lama belum memiliki data desa, sehingga belum masuk hitungan per desa.
+                            Data dapat dilengkapi melalui formulir anggota.
+                        </span>
+                    @else
+                        Anggota lama yang belum memiliki data desa tidak dihitung per desa sampai datanya dilengkapi.
+                    @endif
+                </p>
             @else
                 <p class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
                     Belum ada data desa.
@@ -403,6 +594,58 @@
                         bar.style.width = bar.dataset.width || '0%';
                     });
                 });
+
+                const inputCariDesa = document.getElementById('cari-desa');
+                const tombolFilterDesa = document.querySelectorAll('.filter-desa');
+                const barisDesa = document.querySelectorAll('.desa-row');
+                const pesanDesaKosong = document.getElementById('desa-kosong-filter');
+                const jumlahDesaTampil = document.getElementById('jumlah-desa-tampil');
+                let filterDesaAktif = 'semua';
+
+                const terapkanFilterDesa = () => {
+                    const kataKunci = (inputCariDesa?.value || '').trim().toLowerCase();
+                    let jumlahTampil = 0;
+
+                    barisDesa.forEach((baris) => {
+                        const cocokNama = (baris.dataset.nama || '').includes(kataKunci);
+                        const cocokStatus = filterDesaAktif === 'semua' || baris.dataset.status === filterDesaAktif;
+                        const cocok = cocokNama && cocokStatus;
+
+                        baris.classList.toggle('hidden', !cocok);
+
+                        if (cocok) {
+                            jumlahTampil++;
+                        }
+                    });
+
+                    if (jumlahDesaTampil) {
+                        jumlahDesaTampil.textContent = String(jumlahTampil);
+                    }
+
+                    if (pesanDesaKosong) {
+                        pesanDesaKosong.classList.toggle('hidden', jumlahTampil > 0 || barisDesa.length === 0);
+                    }
+                };
+
+                const aktifkanFilterDesa = (tombolAktif) => {
+                    tombolFilterDesa.forEach((tombol) => {
+                        tombol.classList.remove('bg-brand', 'text-white', 'shadow-sm');
+                        tombol.classList.add('border', 'border-brand-border', 'bg-white', 'text-slate-600');
+                    });
+
+                    tombolAktif.classList.remove('border', 'border-brand-border', 'bg-white', 'text-slate-600');
+                    tombolAktif.classList.add('bg-brand', 'text-white', 'shadow-sm');
+                };
+
+                tombolFilterDesa.forEach((tombol) => {
+                    tombol.addEventListener('click', () => {
+                        filterDesaAktif = tombol.dataset.filterDesa || 'semua';
+                        aktifkanFilterDesa(tombol);
+                        terapkanFilterDesa();
+                    });
+                });
+
+                inputCariDesa?.addEventListener('input', terapkanFilterDesa);
 
                 document.querySelectorAll('.count-up').forEach((element) => {
                     const target = Number(element.dataset.count || 0);

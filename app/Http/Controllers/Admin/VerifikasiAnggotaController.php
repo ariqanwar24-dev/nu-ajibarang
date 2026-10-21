@@ -11,7 +11,7 @@ class VerifikasiAnggotaController extends Controller
 {
     public function index()
     {
-        $anggotas = Anggota::with('user')
+        $anggotas = Anggota::with(['user', 'desa'])
             ->latest()
             ->get();
 
@@ -26,6 +26,12 @@ class VerifikasiAnggotaController extends Controller
 
     public function update(Request $request, Anggota $anggota)
     {
+        abort_if(
+            (int) $anggota->user_id === (int) $request->user()->id,
+            403,
+            'Anda tidak dapat menyetujui atau menolak pendaftaran Anda sendiri.'
+        );
+
         $validated = $request->validate([
             'status_verifikasi' => 'required|in:approved,rejected',
             'catatan_verifikasi' => 'nullable|string|max:1000',
@@ -48,6 +54,10 @@ class VerifikasiAnggotaController extends Controller
                     ? $validated['catatan_verifikasi']
                     : null,
         ]);
+
+        if ($validated['status_verifikasi'] === Anggota::STATUS_APPROVED) {
+            $anggota->pastikanNomorAnggota();
+        }
 
         return redirect()
             ->route('admin.anggota.index')

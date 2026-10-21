@@ -9,10 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('penguruses', function (Blueprint $table) {
-            if (!Schema::hasColumn('penguruses', 'tingkatan')) {
+            if (! Schema::hasColumn('penguruses', 'tingkatan')) {
                 $table->string('tingkatan')->nullable();
             }
-            if (!Schema::hasColumn('penguruses', 'foto')) {
+            if (! Schema::hasColumn('penguruses', 'foto')) {
                 $table->string('foto')->nullable();
             }
         });
@@ -22,9 +22,15 @@ return new class extends Migration
     {
         Schema::table('penguruses', function (Blueprint $table) {
             $columns = [];
-            if (Schema::hasColumn('penguruses', 'tingkatan')) $columns[] = 'tingkatan';
-            if (Schema::hasColumn('penguruses', 'foto')) $columns[] = 'foto';
-            if ($columns) $table->dropColumn($columns);
+            if (Schema::hasColumn('penguruses', 'tingkatan')) {
+                $columns[] = 'tingkatan';
+            }
+            if (Schema::hasColumn('penguruses', 'foto')) {
+                $columns[] = 'foto';
+            }
+            if ($columns) {
+                $table->dropColumn($columns);
+            }
         });
     }
 };

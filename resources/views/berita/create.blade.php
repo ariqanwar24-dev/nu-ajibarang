@@ -11,7 +11,7 @@
                 </nav>
                 <h1 class="mt-1.5 font-serif text-2xl font-semibold tracking-tight text-brand-deeper sm:text-3xl">Tulis Berita Baru</h1>
                 <p class="mt-1.5 max-w-2xl text-sm text-brand-muted">
-                    Lengkapi konten, gambar sampul, dan lokasi acara bila diperlukan. Simpan sebagai draft atau langsung terbitkan.
+                    Lengkapi konten, gambar sampul, dan lokasi acara bila diperlukan. Simpan sebagai draft atau ajukan ke super admin untuk ditinjau.
                 </p>
             </div>
 

@@ -119,14 +119,52 @@
                                 @error('no_hp')<p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
                             </div>
 
-                            <div>
-                                <label for="alamat" class="mb-1.5 block text-xs font-extrabold uppercase tracking-wider text-slate-600">
-                                    Alamat Lengkap <span class="text-red-500">*</span>
-                                </label>
-                                <textarea id="alamat" name="alamat" rows="3" required maxlength="1000"
-                                          placeholder="Alamat lengkap termasuk desa dan kecamatan..."
-                                          class="w-full rounded-xl border-slate-300 text-sm leading-relaxed shadow-sm focus:border-brand focus:ring-brand">{{ old('alamat') }}</textarea>
-                                @error('alamat')<p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
+                            <div class="grid gap-5 sm:grid-cols-2">
+                                <div class="sm:col-span-2">
+                                    <label for="desa_id" class="mb-1.5 block text-xs font-extrabold uppercase tracking-wider text-slate-600">
+                                        Desa <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="desa_id" name="desa_id" required
+                                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand focus:ring-brand">
+                                        <option value="" disabled {{ old('desa_id') ? '' : 'selected' }}>Pilih desa</option>
+                                        @foreach ($desas as $desa)
+                                            <option value="{{ $desa->id }}" @selected((string) old('desa_id') === (string) $desa->id)>
+                                                {{ $desa->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('desa_id')
+                                        <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                                    @else
+                                        <p class="mt-1 text-[11px] leading-relaxed text-slate-400">
+                                            Pilih satu dari 15 desa Kecamatan Ajibarang.
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="rt" class="mb-1.5 block text-xs font-extrabold uppercase tracking-wider text-slate-600">
+                                        RT <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="rt" name="rt" required maxlength="3"
+                                           inputmode="numeric" pattern="[0-9]{1,3}"
+                                           value="{{ old('rt') }}"
+                                           placeholder="Contoh: 03"
+                                           class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand focus:ring-brand">
+                                    @error('rt')<p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div>
+                                    <label for="rw" class="mb-1.5 block text-xs font-extrabold uppercase tracking-wider text-slate-600">
+                                        RW <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="rw" name="rw" required maxlength="3"
+                                           inputmode="numeric" pattern="[0-9]{1,3}"
+                                           value="{{ old('rw') }}"
+                                           placeholder="Contoh: 02"
+                                           class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand focus:ring-brand">
+                                    @error('rw')<p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>@enderror
+                                </div>
                             </div>
                         </div>
                     </section>

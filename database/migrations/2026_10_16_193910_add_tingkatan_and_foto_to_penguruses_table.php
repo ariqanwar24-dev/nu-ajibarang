@@ -10,17 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('penguruses', function (Blueprint $table) {
-        $table->string('tingkatan')->nullable();
-        $table->string('foto')->nullable();
-    });
-}
+    {
+        Schema::table('penguruses', function (Blueprint $table) {
+            $table->string('tingkatan')->nullable();
+            $table->string('foto')->nullable();
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('penguruses', function (Blueprint $table) {
-        $table->dropColumn(['tingkatan', 'foto']);
-    });
-}
+    public function down(): void
+    {
+        Schema::table('penguruses', function (Blueprint $table) {
+            $table->dropColumn(['tingkatan', 'foto']);
+        });
+    }
 };

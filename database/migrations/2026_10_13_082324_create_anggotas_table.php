@@ -11,23 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('anggotas', function (Blueprint $table) {
-    $table->id();
+        Schema::create('anggotas', function (Blueprint $table) {
+            $table->id();
 
-    $table->foreignId('user_id')
-        ->unique()
-        ->constrained()
-        ->cascadeOnDelete();
+            $table->foreignId('user_id')
+                ->unique()
+                ->constrained()
+                ->cascadeOnDelete();
 
-    $table->string('nama_anggota');
-    $table->text('alamat');
-    $table->date('tanggal_lahir')->nullable();
-    $table->enum('jenis_kelamin', ['L', 'P']);
-    $table->string('no_hp', 20);
-    $table->string('foto')->nullable();
+            $table->string('nama_anggota');
+            $table->text('alamat');
+            $table->date('tanggal_lahir')->nullable();
+            $table->enum('jenis_kelamin', ['L', 'P']);
+            $table->string('no_hp', 20);
+            $table->string('foto')->nullable();
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

@@ -21,7 +21,7 @@ test('users can authenticate using the login screen', function () {
 });
 
 test('admin users are redirected to the admin dashboard', function () {
-    $admin = User::factory()->create(['is_admin' => true]);
+    $admin = User::factory()->admin()->create();
 
     $response = $this->post('/login', [
         'email' => $admin->email,
