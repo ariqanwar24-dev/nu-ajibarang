@@ -69,13 +69,6 @@
                                     <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
                                         <span class="material-symbols-outlined text-[18px]">info</span>
                                     </span>
-                                    <div>
-                                        <p class="text-xs font-extrabold uppercase tracking-wide">Data demonstrasi</p>
-                                        <p class="mt-1 text-xs leading-relaxed text-amber-900/80">
-                                            Sebagian data pada halaman ini adalah data contoh untuk keperluan demonstrasi,
-                                            <strong>bukan susunan pengurus resmi</strong> MWC NU Kecamatan Ajibarang.
-                                        </p>
-                                    </div>
                                 </div>
                             @endif
                         </div>

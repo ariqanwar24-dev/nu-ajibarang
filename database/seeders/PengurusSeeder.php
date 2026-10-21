@@ -8,45 +8,84 @@ use Illuminate\Database\Seeder;
 class PengurusSeeder extends Seeder
 {
     /**
-     * Data contoh untuk demonstrasi. Nama dan jabatan tidak mewakili
-     * susunan pengurus resmi MWC NU Kecamatan Ajibarang.
+     * Data berdasarkan gambar susunan pengurus yang diberikan.
+     *
+     * Catatan:
+     * - Ejaan nama mengikuti teks yang terbaca pada gambar.
+     * - Periode kepengurusan tidak tercantum pada gambar.
+     * - Data Banom tidak dimasukkan karena tidak terdapat
+     *   dalam gambar sumber.
      */
     public function run(): void
     {
         $data = [
-            // Dewan Mustasyar
-            ['demo-mustasyar-01', 'KH. Ahmad Fauzi Ridwan', 'Mustasyar', 'mustasyar', 1],
-            ['demo-mustasyar-02', 'KH. Muhammad Syarif Hidayat', 'Mustasyar', 'mustasyar', 2],
-            ['demo-mustasyar-03', 'KH. Abdul Ghofur Zain', 'Mustasyar', 'mustasyar', 3],
+            // ==========================================
+            // MUSTASYAR
+            // ==========================================
+            ['asli-mustasyar-01', 'Kiai Kholid Abdul Rosyid', 'Mustasyar', 'mustasyar', 1],
+            ['asli-mustasyar-02', 'KH. Habib Muhammad Al Khasni', 'Mustasyar', 'mustasyar', 2],
+            ['asli-mustasyar-03', 'KH. Munawar Kholil', 'Mustasyar', 'mustasyar', 3],
+            ['asli-mustasyar-04', 'Kiai Abu Bakar', 'Mustasyar', 'mustasyar', 4],
+            ['asli-mustasyar-05', 'KH. Turkiman', 'Mustasyar', 'mustasyar', 5],
+            ['asli-mustasyar-06', 'KH. Hamam Sholeh Mustofa', 'Mustasyar', 'mustasyar', 6],
+            ['asli-mustasyar-07', 'Kiai Bahrun Imron Rosyadi', 'Mustasyar', 'mustasyar', 7],
+            ['asli-mustasyar-08', 'Kiai Masruri Zen', 'Mustasyar', 'mustasyar', 8],
+            ['asli-mustasyar-09', 'KH. Ahmad Sofyan, S.Pd.', 'Mustasyar', 'mustasyar', 9],
 
-            // Syuriyah
-            ['demo-syuriyah-01', 'KH. M. Ridlwan Abdullah', 'Rais Syuriyah', 'syuriyah', 1],
-            ['demo-syuriyah-02', 'KH. Ahmad Munir Fadlil', 'Wakil Rais Syuriyah', 'syuriyah', 2],
-            ['demo-syuriyah-03', 'KH. Muhammad Anwar Ridwan', 'Wakil Rais Syuriyah', 'syuriyah', 3],
-            ['demo-syuriyah-04', 'KH. Abdul Hamid Musthofa', 'Katib Syuriyah', 'syuriyah', 4],
-            ['demo-syuriyah-05', 'H. Agus Salim Fauzi', "A'wan Syuriyah", 'syuriyah', 5],
+            // ==========================================
+            // SYURIYAH - RAIS DAN WAKIL RAIS
+            // ==========================================
+            ['asli-syuriyah-rais-01', 'KH. Zulfa Mohammad Nur', 'Rais Syuriyah', 'syuriyah', 1],
 
-            // Tanfidziyah
-            ['demo-tanfidziyah-01', 'H. Muhammad Faiz Najib', 'Ketua Tanfidziyah', 'tanfidziyah', 1],
-            ['demo-tanfidziyah-02', 'Hj. Siti Nurhayati', 'Wakil Ketua', 'tanfidziyah', 2],
-            ['demo-tanfidziyah-03', 'H. Ahmad Syaifudin', 'Sekretaris', 'tanfidziyah', 3],
-            ['demo-tanfidziyah-04', 'Muhammad Rifqi Hidayat', 'Wakil Sekretaris', 'tanfidziyah', 4],
-            ['demo-tanfidziyah-05', 'Hj. Umi Kulsum', 'Bendahara', 'tanfidziyah', 5],
-            ['demo-tanfidziyah-06', 'Ahmad Fauzan Aziz', 'Wakil Bendahara', 'tanfidziyah', 6],
-            ['demo-tanfidziyah-07', 'H. Abdul Rozak', 'Koordinator Organisasi', 'tanfidziyah', 7],
-            ['demo-tanfidziyah-08', 'Muhammad Ihsan Maulana', 'Koordinator Dakwah', 'tanfidziyah', 8],
+            ['asli-syuriyah-wakil-01', 'Kiai Akhmad Tohirin', 'Wakil Rais Syuriyah', 'syuriyah', 2],
+            ['asli-syuriyah-wakil-02', 'Kiai Mahful Fauzi', 'Wakil Rais Syuriyah', 'syuriyah', 3],
+            ['asli-syuriyah-wakil-03', 'Dr. Kiai Nur Kholis, M.S.I.', 'Wakil Rais Syuriyah', 'syuriyah', 4],
+            ['asli-syuriyah-wakil-04', 'Kiai Agus Syarifudin', 'Wakil Rais Syuriyah', 'syuriyah', 5],
+            ['asli-syuriyah-wakil-05', 'Kiai Slamet Faozi', 'Wakil Rais Syuriyah', 'syuriyah', 6],
 
-            // Banom NU
-            ['demo-banom-01', 'Muhammad Ali Mustofa', 'Ketua GP Ansor', 'GP Ansor', 1],
-            ['demo-banom-02', 'Ahmad Rifai', 'Sekretaris GP Ansor', 'GP Ansor', 2],
-            ['demo-banom-03', 'Hj. Siti Aminah', 'Ketua Muslimat NU', 'Muslimat NU', 3],
-            ['demo-banom-04', 'Hj. Nur Hidayah', 'Sekretaris Muslimat NU', 'Muslimat NU', 4],
-            ['demo-banom-05', 'Siti Khodijah', 'Ketua Fatayat NU', 'Fatayat NU', 5],
-            ['demo-banom-06', 'Ahmad Farhan', 'Ketua IPNU', 'IPNU', 6],
-            ['demo-banom-07', 'Nabila Putri', 'Ketua IPPNU', 'IPPNU', 7],
-            ['demo-banom-08', 'Muhammad Yusuf', 'Ketua Pagar Nusa', 'Pagar Nusa', 8],
-            ['demo-banom-09', 'Dr. Ahmad Taufik', 'Ketua ISNU', 'ISNU', 9],
-            ['demo-banom-10', 'KH. Abdul Ghoni', 'Ketua Pergunu', 'Pergunu', 10],
+            // ==========================================
+            // SYURIYAH - KATIB DAN WAKIL KATIB
+            // ==========================================
+            ['asli-syuriyah-katib-01', 'Kiai Mujaroib, S.Pd.', 'Katib Syuriyah', 'syuriyah', 7],
+
+            ['asli-syuriyah-wakil-katib-01', 'Kiai Zaenudin, S.Pd., M.Si.', 'Wakil Katib Syuriyah', 'syuriyah', 8],
+            ['asli-syuriyah-wakil-katib-02', 'Kiai Jamaludin, S.Ag.', 'Wakil Katib Syuriyah', 'syuriyah', 9],
+            ['asli-syuriyah-wakil-katib-03', 'KH. Afifudin Idrus, M.Ag.', 'Wakil Katib Syuriyah', 'syuriyah', 10],
+
+            // ==========================================
+            // SYURIYAH - A'WAN
+            // ==========================================
+            ['asli-syuriyah-awan-01', 'Kiai Ahmad Masduki', "A'wan Syuriyah", 'syuriyah', 11],
+            ['asli-syuriyah-awan-02', 'Kiai Nur Arifin', "A'wan Syuriyah", 'syuriyah', 12],
+            ['asli-syuriyah-awan-03', 'Kiai Riswanto Maftuh Fauzi', "A'wan Syuriyah", 'syuriyah', 13],
+            ['asli-syuriyah-awan-04', 'Kiai Chudori', "A'wan Syuriyah", 'syuriyah', 14],
+            ['asli-syuriyah-awan-05', 'Kiai Ahmad Riyadi', "A'wan Syuriyah", 'syuriyah', 15],
+            ['asli-syuriyah-awan-06', 'Kiai Shobirin', "A'wan Syuriyah", 'syuriyah', 16],
+            ['asli-syuriyah-awan-07', 'Kiai Ali Muhadi Masykur', "A'wan Syuriyah", 'syuriyah', 17],
+            ['asli-syuriyah-awan-08', 'KH. Imam Wasingun', "A'wan Syuriyah", 'syuriyah', 18],
+            ['asli-syuriyah-awan-09', 'KH. Wartoyo', "A'wan Syuriyah", 'syuriyah', 19],
+            ['asli-syuriyah-awan-10', 'Kiai Abu Masykur', "A'wan Syuriyah", 'syuriyah', 20],
+            ['asli-syuriyah-awan-11', "Kiai M. Amin Ma'mun", "A'wan Syuriyah", 'syuriyah', 21],
+            ['asli-syuriyah-awan-12', 'Kiai Bushrol Kahfi, S.P.', "A'wan Syuriyah", 'syuriyah', 22],
+            ['asli-syuriyah-awan-13', 'Kiai Misbahul Huda', "A'wan Syuriyah", 'syuriyah', 23],
+
+            // ==========================================
+            // TANFIDZIYAH - KETUA DAN WAKIL KETUA
+            // ==========================================
+            ['asli-tanfidziyah-ketua-01', 'H. Slamet Ibnu Ansori, S.AP', 'Ketua', 'tanfidziyah', 1],
+
+            ['asli-tanfidziyah-wakil-01', 'Nisful Adji, S.Ag.', 'Wakil Ketua', 'tanfidziyah', 2],
+            ['asli-tanfidziyah-wakil-02', 'Akhmad Syaibatul Khamdi', 'Wakil Ketua', 'tanfidziyah', 3],
+            ['asli-tanfidziyah-wakil-03', 'H. Suripto, S.Pd.', 'Wakil Ketua', 'tanfidziyah', 4],
+
+            // ==========================================
+            // TANFIDZIYAH - SEKRETARIS DAN WAKIL
+            // ==========================================
+            ['asli-tanfidziyah-sekretaris-01', 'Rofiqdin, S.Sos.', 'Sekretaris', 'tanfidziyah', 5],
+
+            ['asli-tanfidziyah-wakil-sekretaris-01', 'Agus Waluyo, S.Pd.I., M.Pd.', 'Wakil Sekretaris', 'tanfidziyah', 6],
+            ['asli-tanfidziyah-wakil-sekretaris-02', 'Abdul Aziz', 'Wakil Sekretaris', 'tanfidziyah', 7],
+            ['asli-tanfidziyah-wakil-sekretaris-03', 'Endro Aprilian Budi', 'Wakil Sekretaris', 'tanfidziyah', 8],
         ];
 
         foreach ($data as [$seedKey, $nama, $jabatan, $tingkatan, $urutan]) {
@@ -57,7 +96,7 @@ class PengurusSeeder extends Seeder
                     'jabatan' => $jabatan,
                     'tingkatan' => $tingkatan,
                     'urutan' => $urutan,
-                    'is_demo' => true,
+                    'is_demo' => false,
                 ],
             );
         }

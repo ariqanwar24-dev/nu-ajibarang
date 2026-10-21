@@ -114,20 +114,6 @@
                     </div>
                 </div>
 
-                @if ($pengurus->is_demo)
-                    <div class="mt-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-amber-950">
-                        <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-                            <span class="material-symbols-outlined text-[18px]">info</span>
-                        </span>
-                        <div>
-                            <p class="text-xs font-extrabold uppercase tracking-wide">Data demonstrasi</p>
-                            <p class="mt-1 text-xs leading-relaxed text-amber-900/80">
-                                Data ini merupakan contoh untuk keperluan demonstrasi dan
-                                <strong>bukan data pengurus resmi</strong>.
-                            </p>
-                        </div>
-                    </div>
-                @endif
 
                 <div class="mt-8 rounded-2xl border border-brand-border bg-white p-5 sm:p-6">
                     <h2 class="font-serif text-xl font-semibold text-brand">Informasi kepengurusan</h2>

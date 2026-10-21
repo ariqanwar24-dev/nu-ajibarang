@@ -54,7 +54,6 @@ test('halaman publik mengelompokkan pengurus dari database dan menandai data dem
         ->assertSee($mustasyar->nama)
         ->assertSee($banom->nama)
         ->assertSee('GP Ansor')
-        ->assertSee('Data demonstrasi')
         ->assertSee('bukan susunan pengurus resmi');
 });
 
@@ -173,7 +172,6 @@ test('halaman admin menampilkan data pengurus dengan pagination', function () {
     $this->actingAs($admin)->get(route('admin.pengurus.index'))
         ->assertOk()
         ->assertSee('Kelola Pengurus')
-        ->assertSee('data demonstrasi')
         ->assertSee('Demo')
         ->assertSee('Lihat ↗')
         ->assertSee('?page=2', false);
