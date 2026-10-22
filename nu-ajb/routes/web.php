@@ -21,9 +21,14 @@ Route::get('/pengurus/{pengurus}', [PengurusController::class, 'show'])->name('p
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('index');
 
+    // Daftar anggota bisa dilihat admin dan superadmin.
     Route::get('/anggota', [VerifikasiAnggotaController::class, 'index'])->name('anggota.index');
-    Route::patch('/anggota/{anggota}/verifikasi', [VerifikasiAnggotaController::class, 'update'])->name('anggota.verifikasi');
-    Route::delete('/anggota/{anggota}', [VerifikasiAnggotaController::class, 'destroy'])->name('anggota.destroy');
+
+    // Verifikasi dan penghapusan anggota khusus superadmin.
+    Route::middleware('super_admin')->group(function () {
+        Route::patch('/anggota/{anggota}/verifikasi', [VerifikasiAnggotaController::class, 'update'])->name('anggota.verifikasi');
+        Route::delete('/anggota/{anggota}', [VerifikasiAnggotaController::class, 'destroy'])->name('anggota.destroy');
+    });
 
     Route::get('/berita', [BeritaController::class, 'adminIndex'])->name('berita.index');
     Route::get('/berita/create', [BeritaController::class, 'create'])->name('berita.create');
@@ -40,8 +45,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/pengurus/{pengurus}', [PengurusController::class, 'destroy'])->name('pengurus.destroy');
 });
 
-Route::get('/dashboard', function () { return view('dashboard'); })
-    ->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -52,8 +58,4 @@ Route::middleware('auth')->group(function () {
     Route::post('/anggota', [AnggotaController::class, 'store'])->name('anggota.store');
     Route::get('/kartu', [KartuAnggotaController::class, 'index'])->name('kartu.index');
 });
-
-Route::get('/pengurus', [PengurusController::class, 'index'])
-    ->name('pengurus.index');
-
 require __DIR__.'/auth.php';

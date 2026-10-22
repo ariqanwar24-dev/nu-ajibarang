@@ -196,66 +196,64 @@
 
     <main class="flex-grow">
 
-      <!-- HERO / BANNER INTERAKTIF DAN SINEMATIK -->
-      <section class="relative overflow-hidden min-h-[520px] md:min-h-[580px] flex items-center">
-        
-        <!-- Latar Belakang Gambar dengan Animasi Ken Burns -->
-        <div class="absolute inset-0 bg-cover bg-center animate-ken-burns transform scale-100 transition-transform duration-1000"
-             style="background-image: url('{{ asset('images/banner-nu.jpg') }}');"></div>
+ 
+<!-- HERO / BANNER RESPONSIVE -->
+<section class="relative flex items-center overflow-hidden bg-[#174A35] min-h-[460px] sm:min-h-[520px] md:min-h-[580px]">
 
-        <!-- Overlay Gelap Gradasi -->
-        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-black/35"></div>
+  <!-- Background: gambar tetap utuh di HP -->
+  <div
+    class="absolute inset-0 bg-no-repeat bg-center bg-contain sm:bg-cover"
+    style="background-image: url('{{ asset('images/banner-nu.jpg') }}');"
+  ></div>
 
-        <!-- Gradient Light Glow Effect -->
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-[#174A35]/40 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
-        <div class="absolute bottom-0 right-10 w-80 h-80 bg-[#B69A5A]/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+  <!-- Overlay agar teks tetap terbaca -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/65 to-black/50 sm:bg-gradient-to-r sm:from-black/85 sm:via-black/60 sm:to-black/20"></div>
 
-        <!-- Konten Banner -->
-        <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 md:py-24 w-full">
-          <div class="max-w-2xl flex flex-col justify-center">
+  <!-- Konten banner -->
+  <div class="relative z-10 mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-16 md:py-24">
+    <div class="flex max-w-2xl flex-col justify-center">
 
-            <!-- Badge Organisasi -->
-            <div data-aos="fade-down" data-aos-duration="800">
-              <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[11px] sm:text-[12px] uppercase tracking-[0.2em] font-semibold text-[#D9C28D] shadow-inner mb-6">
-                <span class="w-2 h-2 rounded-full bg-[#D9C28D] animate-ping"></span>
-                Majelis Wakil Cabang Nahdlatul Ulama
-              </span>
-            </div>
+      <div data-aos="fade-down" data-aos-duration="800">
+        <span class="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#D9C28D] shadow-inner backdrop-blur-md sm:mb-6 sm:px-3.5 sm:text-xs sm:tracking-[0.2em]">
+          <span class="h-2 w-2 shrink-0 rounded-full bg-[#D9C28D]"></span>
+          <span class="whitespace-normal">Majelis Wakil Cabang Nahdlatul Ulama</span>
+        </span>
+      </div>
 
-            <!-- Judul Utama Banner -->
-            <h1 data-aos="fade-right" data-aos-duration="800" data-aos-delay="200" class="font-serif text-3xl sm:text-4xl lg:text-[50px] leading-[1.15] text-white font-medium tracking-tight mb-6 drop-shadow-md">
-              Merawat Tradisi,<br>
-              <span class="italic font-normal text-[#F2E8CF] underline decoration-[#B69A5A]/50 underline-offset-8">Menguatkan Umat</span>
-            </h1>
+      <h1 data-aos="fade-right" data-aos-duration="800" data-aos-delay="200"
+          class="mb-4 font-serif text-3xl font-medium leading-tight tracking-tight text-white drop-shadow-md sm:mb-6 sm:text-4xl sm:leading-[1.15] lg:text-[50px]">
+        Merawat Tradisi,<br>
+        <span class="font-normal italic text-[#F2E8CF] underline decoration-[#B69A5A]/50 underline-offset-4 sm:underline-offset-8">Menguatkan Umat</span>
+      </h1>
 
-            <!-- Deskripsi Singkat -->
-            <p data-aos="fade-right" data-aos-duration="800" data-aos-delay="400" class="text-white/90 text-sm sm:text-base leading-relaxed max-w-xl mb-8 font-light drop-shadow">
-              Media portal informasi resmi, warta keagamaan, dan agenda kegiatan MWC NU Kecamatan Ajibarang.
-            </p>
+      <p data-aos="fade-right" data-aos-duration="800" data-aos-delay="400"
+         class="mb-6 max-w-xl text-sm font-light leading-relaxed text-white/90 drop-shadow sm:mb-8 sm:text-base">
+        Media portal informasi resmi, warta keagamaan, dan agenda kegiatan MWC NU Kecamatan Ajibarang.
+      </p>
 
-            <!-- Tombol Aksi (CTA) -->
-            <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="600" class="flex flex-wrap items-center gap-4 sm:gap-6">
-              <a class="group relative inline-flex items-center justify-center px-6 py-3 bg-[#174A35] hover:bg-[#113928] text-white text-[14px] font-medium tracking-wide rounded-lg transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 overflow-hidden" 
-                 href="#berita">
-                <span class="absolute inset-0 w-full h-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                <span class="relative z-10 flex items-center gap-2">
-                  Baca Berita
-                  <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </span>
-              </a>
+      <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="600"
+           class="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-6">
+        <a href="#berita"
+           class="group inline-flex items-center justify-center gap-2 rounded-lg bg-[#174A35] px-5 py-3 text-center text-sm font-medium tracking-wide text-white shadow-lg transition-all duration-300 hover:bg-[#113928] sm:px-6">
+          Baca Berita
+          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
 
-              <a class="px-6 py-3 rounded-lg text-[14px] font-medium text-white hover:text-[#D9C28D] bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 backdrop-blur-sm inline-flex items-center gap-2 transition-all duration-300 group hover:-translate-y-0.5" 
-                 href="#tentang-kami">
-                Tentang Kami
-                <span class="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
-              </a>
-            </div>
+        <a href="#tentang-kami"
+           class="group inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/5 px-5 py-3 text-center text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10 hover:text-[#D9C28D] sm:px-6">
+          Tentang Kami
+          <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+        </a>
+      </div>
 
-          </div>
-        </div>
+    </div>
+  </div>
 
-        <div class="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-[#FBFBF9] to-transparent pointer-events-none"></div>
-      </section>
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#FBFBF9] to-transparent"></div>
+</section>
+
 
       <!-- BERITA TERBARU -->
       <section class="bg-brand-surface border-y border-brand-border py-16 md:py-20" id="berita">

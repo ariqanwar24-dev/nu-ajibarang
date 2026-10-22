@@ -20,12 +20,6 @@
             'icon' => 'M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857a5.002 5.002 0 0 0-9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
         ],
         [
-            'label' => 'Lacak Berita',
-            'url' => route('tracking.index'),
-            'active' => request()->routeIs('tracking.*'),
-            'icon' => 'm21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z',
-        ],
-        [
             'label' => 'Kartu Anggota',
             'url' => route('kartu.index'),
             'active' => request()->routeIs('kartu.*'),

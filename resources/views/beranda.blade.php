@@ -64,11 +64,11 @@
     <main class="flex-grow">
 
       <!-- HERO / BANNER RESPONSIF -->
-      <section class="relative flex min-h-[calc(100svh-72px)] items-center overflow-hidden py-12 sm:py-16 lg:min-h-[min(760px,calc(100svh-80px))] lg:py-20">
+      <section class="relative flex min-h-[520px] items-center overflow-hidden py-12 sm:min-h-[580px] sm:py-16 md:min-h-[640px] lg:min-h-[min(760px,calc(100svh-80px))] lg:py-20">
 
         <!-- Background image -->
         <div
-          class="absolute inset-0 transform scale-100 bg-cover bg-center transition-transform duration-1000 animate-ken-burns"
+          class="absolute inset-0 transform scale-100 bg-cover bg-no-repeat bg-[position:68%_center] transition-transform duration-1000 sm:bg-center lg:animate-ken-burns"
           style="background-image: url('{{ asset('images/banner-nu.jpg') }}');">
         </div>
 
@@ -425,11 +425,6 @@
                 </a>
               </li>
 
-              <li>
-                <a class="transition-colors hover:text-[#174A35]" href="{{ route('tracking.index') }}">
-                  Lacak Berita &amp; Kegiatan
-                </a>
-              </li>
             </ul>
 
           </div>
